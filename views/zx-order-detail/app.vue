@@ -155,6 +155,12 @@ export default {
     XImg,
     Previewer
   },
+  props: {
+      role: {
+          type: String,
+          default: 'user'
+      }
+  },
   methods: {
     getScreenWidth() {
       return document.body.clientWidth

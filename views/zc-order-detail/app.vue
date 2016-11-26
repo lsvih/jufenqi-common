@@ -150,6 +150,12 @@ export default {
     JRadio,
     PopupPicker
   },
+  props: {
+      role: {
+          type: String,
+          default: 'user'
+      }
+  },
   methods: {
     getCount(type, orders){
       let count = 0
