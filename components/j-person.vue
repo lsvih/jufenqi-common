@@ -1,4 +1,5 @@
 <template>
+  <div>
 <div class="person" v-if="Type === '0'">
     <div class="zx-img"><img :src="Image"></div>
     <div class="zx-name">{{Name}}</div>
@@ -8,6 +9,7 @@
     <div class="zc-img"><img :src="Image"></div>
     <div class="zc-name">{{Name}}</div>
     <div class="zc-tel" onclick="location.href='tel:{{Tel}}'"><img src="../assets/images/tel-s.png"></div>
+</div>
 </div>
 </template>
 

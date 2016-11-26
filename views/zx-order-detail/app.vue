@@ -2,8 +2,7 @@
 <header>
     <img src="../../assets/images/status.png">
     <div class="status">{{Status.zx[order.status].name}}</div>
-    <div class="btn" v-if="order.status==1" v-tap="cancelOrder()">取消预约</div>
-
+    <div class="btn" v-if="order.status==1&&Role === 'user'" v-tap="cancelOrder()">取消预约</div>
 </header>
 <j-person :img="order.manager.profileImage" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
 <j-person style="top:80px;" :img="order.projectManager.profileImage" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
@@ -13,7 +12,7 @@
     </group>
     <div class="select-plan" v-if="order.status==3">
         <div class="select-item-1" :class="{'active':selectPlan==0}" v-tap="selectPlan = 0">方案一</div>
-        <div class="select-item-2" v-if="order.planList[1]" :class="{'active':selectPlan==1}" v-tap="selectPlan = 1">方案二</div>
+        <div class="select-item-2" v-if="order.planList.length === 2" :class="{'active':selectPlan==1}" v-tap="selectPlan = 1">方案二</div>
     </div>
 
     <group title="设计方案" v-if="order.status>=3">
@@ -44,9 +43,15 @@
 
     </div>
 </div>
-<div class="status-3-btn" v-if="order.status === 3">
+<div class="status-3-btn" v-if="order.status === 3&&Role === 'user'">
     <div class="btn-left" v-tap="cancelOrder(true)"><img src="./change.png">更换工长</div>
     <div class="btn-right" v-tap="selectCurrentlyPlan()">选择当前方案</div>
+</div>
+<div v-if="Role === 'manager'">
+    <div class="status-3-btn" v-if="order.status == 1" v-tap="visit()">已上门</div>
+    <div class="status-3-btn" v-if="order.status == 4" v-tap="pay()">已支付</div>
+    <div class="status-3-btn" v-if="order.status == 5&&order.payed" v-tap="start()">已开工</div>
+    <div class="status-3-btn" v-if="order.status == 6" v-tap="complete()">已完工</div>
 </div>
 <!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
 <previewer :list="order.planList[0].images" v-ref:previewer :options="options"></previewer>
@@ -61,7 +66,7 @@ import XButton from 'vux-components/x-button'
 import Scroller from 'vux-components/scroller'
 import XImg from 'vux-components/x-img'
 import Previewer from 'vux-components/previewer'
-import JPersonInfoBlock from '../../components/j-person'
+import JPerson from '../../components/j-person'
 import axios from 'axios'
 import Status from '../../status'
 try {
@@ -113,6 +118,11 @@ export default {
             default: 'user'
         }
     },
+    computed: {
+        Role() {
+            return this.role
+        }
+    },
     methods: {
         getScreenWidth() {
             return document.body.clientWidth
@@ -137,6 +147,38 @@ export default {
             }).catch((res) => {
                 alert("更新订单失败，请稍后重试")
             })
+        },
+        visit() {
+            axios.post(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}/confirmVisit`).then((res) => {
+                alert("订单已更新！")
+                location.reload()
+            }).catch((res) => {
+                alert("更新订单失败，请稍后重试")
+            })
+        },
+        start() {
+            axios.post(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}/confirmStart`).then((res) => {
+                alert("订单已更新！")
+                location.reload()
+            }).catch((res) => {
+                alert("更新订单失败，请稍后重试")
+            })
+        },
+        pay() {
+            axios.post(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}/confirmPay`).then((res) => {
+                alert("订单已更新！")
+                location.reload()
+            }).catch((res) => {
+                alert("更新订单失败，请稍后重试")
+            })
+        },
+        complete() {
+            axios.post(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}/confirmComplete`).then((res) => {
+                alert("订单已更新！")
+                location.reload()
+            }).catch((res) => {
+                alert("更新订单失败，请稍后重试")
+            })
         }
     }
 }
@@ -153,7 +195,7 @@ article {
     color: #393939;
 }
 </style>
-<style scoped lang="less">@import '~zx-order-detail.less';
+<style scoped lang="less">@import 'zx-order-detail.less';
 
 .status-3-btn {
     position: relative;
