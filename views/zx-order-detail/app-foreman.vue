@@ -3,23 +3,11 @@
   <img src="../../assets/images/status.png">
   <div class="status">{{zxStatusList[order.plan.status].name}}</div>
 </header>
-<div class="butler">
-  <div class="zx-butler-img"><img :src="order.manager.profileImage"></div>
-  <div class="zx-butler-name">{{order.manager.nickname}}</div>
-  <div class="zx-butler-tel" onclick="location.href='tel:{{order.manager.mobile}}'"><img src="../../assets/images/tel.png"></div>
-</div>
-<div class="butler" style="top:80px;">
-  <div class="zx-butler-img"><img :src="order.projectManager.profileImage"></div>
-  <div class="zx-butler-name">{{order.projectManager.nickname}}</div>
-  <div class="zx-butler-tel" onclick="location.href='tel:{{order.projectManager.mobile}}'"><img src="../../assets/images/tel.png"></div>
-</div>
+<j-person :img="order.manager.profileImage" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
+<j-person  style="top:80px;" :img="order.projectManager.profileImage" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
 <div class="content">
   <group class="contact" style="margin-top:-1.17647059em;" v-if="order.plan.status==1||order.plan.status==2">
-    <div class="zc-line-3">
-      <div class="zc-butler-img"><img :src="order.plan.foreman.profileImage"></div>
-      <div class="zc-butler-name">{{order.plan.foreman.nickname}}</div>
-      <div class="zc-butler-tel" onclick="location.href='tel:{{order.plan.foreman.mobile}}'"><img src="../../assets/images/tel.png"></div>
-    </div>
+    <j-person :img="order.plan.foreman.profileImage" :name="order.plan.foreman.nickname" :tel="order.plan.foreman.mobile">
 </div>
 </group>
 
@@ -62,6 +50,7 @@ import XButton from 'vux-components/x-button'
 import Scroller from 'vux-components/scroller'
 import XImg from 'vux-components/x-img'
 import Previewer from 'vux-components/previewer'
+import JPerson from '../../components/j-person'
 import axios from 'axios'
 try{
   axios.defaults.headers.common['x-user-token'] = JSON.parse(localStorage.getItem("user")).token
@@ -129,7 +118,8 @@ export default {
     XButton,
     Scroller,
     XImg,
-    Previewer
+    Previewer,
+    JPerson
   },
   methods: {
     getScreenWidth() {
