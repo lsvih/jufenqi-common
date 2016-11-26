@@ -1,16 +1,11 @@
 <template>
 <header>
   <img src="../../assets/images/status.png">
-  <div class="status">{{zcStatusList[order.status].name}}</div>
-  <div class="btn" v-if="order.status==1||order.status==2" v-tap="cancelOrder()">取消预约</div>
+  <div class="status">{{Status.zc[order.status].name}}</div>
+  <div class="btn" v-if="(order.status==1||order.status==2)&&Role === 'user'" v-tap="cancelOrder()">取消预约</div>
 </header>
-<div class="butler">
-  <div class="zc-butler-img"><img :src="order.manager.profileImage"></div>
-  <div class="zc-butler-name">{{order.manager.nickname}}</div>
-  <div class="zc-butler-tel" onclick="location.href='tel:{{order.manager.mobile}}'"><img src="../../assets/images/tel.png"></div>
-</div>
+<j-person :img="order.manager.profileImage" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
 <div class="content">
-
   <div class="zc-list">
     <group v-for="shop in order.subOrders">
       <div class="line-1">
@@ -52,14 +47,14 @@
       </div>
     </group>
 
-    <group v-if="order.status == 2">
+    <group v-if="order.status == 2&&Role === 'user'">
       <div class="line-2" style="border-bottom:1px solid #eee;height:30px;line-height:30px;">
         <div class="line-2-title" style="line-height:30px">请选择您的购买方式</div>
         <!-- <div class="line-2-right"><img class="down" src="./down.png"></div> -->
       </div>
       <j-radio :options="payments" @on-change="selectPay"></j-radio>
     </group>
-    <group v-if="order.status == 2">
+    <group v-if="order.status == 2&&Role === 'user'">
       <div class="sumbit-order" :class="{'active':payWay!==''}" v-tap="submitOrder">确认订单</div>
     </group>
     <group v-if="order.status > 2">
@@ -73,16 +68,18 @@
     </group>
   </div>
 </div>
-<popup-picker title="分期数" :data="insNumberList" :show.sync="showInsNumberPicker" :value.sync="insNumberSelect" @on-hide="onHideInsSelect" v-ref:insNumber :show-cell="false"></popup-picker>
+<popup-picker title="分期数" :data="insNumberList" :show.sync="showInsNumberPicker" :value.sync="insNumberSelect" @on-hide="onHideInsSelect" v-ref:insNumber :show-cell="false" v-if="Role === 'user'"></popup-picker>
 </template>
 
 <script>
 import Lib from 'assets/Lib.js'
 import Group from 'vux-components/group'
 import Cell from 'vux-components/cell'
-import JRadio from 'components/JRadio.vue'
+import JRadio from '../../components/JRadio.vue'
 import PopupPicker from 'vux-components/popup-picker'
+import JPerson from '../../components/j-person'
 import axios from 'axios'
+import Status from '../../status'
 try {
   axios.defaults.headers.common['x-user-token'] = JSON.parse(localStorage.getItem("user")).token
 } catch (e) {
@@ -93,34 +90,7 @@ export default {
   data() {
     return {
       order: {},
-      zcStatusList: [{
-        status: 0,
-        name: "订单已删除"
-      }, {
-        status: 1,
-        name: "已预约"
-      }, {
-        status: 2,
-        name: "待确认"
-      }, {
-        status: 3,
-        name: "待付款"
-      }, {
-        status: 4,
-        name: "待收货"
-      }, {
-        status: 5,
-        name: "已收货"
-      }, {
-        status: 6,
-        name: "退款中"
-      }, {
-        status: 7,
-        name: "已退款"
-      }, {
-        status: 8,
-        name: "已取消"
-      }],
+      Status,
       payments: [{
         key: '0',
         value: '全款购买'
@@ -148,7 +118,8 @@ export default {
     Group,
     Cell,
     JRadio,
-    PopupPicker
+    PopupPicker,
+    JPerson
   },
   props: {
       role: {

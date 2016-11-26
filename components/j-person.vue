@@ -1,5 +1,5 @@
 <template>
-<div class="person" v-if="Type === 'zx'">
+<div class="person" v-if="Type === '0'">
     <div class="zx-img"><img :src="Image"></div>
     <div class="zx-name">{{Name}}</div>
     <div class="zx-tel" onclick="location.href='tel:{{Tel}}'"><img src="../assets/images/tel-s.png"></div>
@@ -28,7 +28,7 @@ export default {
         },
         type: {
             type: String,
-            default: 'zx'
+            default: '0'
         }
     },
     computed: {

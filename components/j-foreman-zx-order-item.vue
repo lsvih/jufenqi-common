@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import '../status'
+import Status from '../status'
 export default {
     data() {
         return {

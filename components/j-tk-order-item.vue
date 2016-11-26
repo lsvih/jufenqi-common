@@ -6,7 +6,7 @@
     </div>
     <div class="zc-line-2">
         <div class="zc-order-shop">{{order.store.name}}</div>
-        <div class="zc-order-status">{{zcStatusList[order.status].name}}</div>
+        <div class="zc-order-status">{{Status.zc[order.status].name}}</div>
     </div>
     <div class="zc-line-3">
         <div class="zc-butler-img"><img :src="order.manager.profileImage"></div>
@@ -20,37 +20,11 @@
 </template>
 
 <script>
+import Status from '../status'
 export default {
     data() {
         return {
-            zcStatusList: [{
-                status: 0,
-                name: "订单已删除"
-            }, {
-                status: 1,
-                name: "已预约"
-            }, {
-                status: 2,
-                name: "待确认"
-            }, {
-                status: 3,
-                name: "待付款"
-            }, {
-                status: 4,
-                name: "待收货"
-            }, {
-                status: 5,
-                name: "已收货"
-            }, {
-                status: 6,
-                name: "退款中"
-            }, {
-                status: 7,
-                name: "已退款"
-            }, {
-                status: 8,
-                name: "已取消"
-            }]
+            Status
         }
     },
     components: {},

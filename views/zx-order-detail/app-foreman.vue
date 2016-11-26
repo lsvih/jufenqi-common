@@ -1,13 +1,13 @@
 <template>
 <header>
   <img src="../../assets/images/status.png">
-  <div class="status">{{zxStatusList[order.plan.status].name}}</div>
+  <div class="status">{{Status.zx[order.plan.status].name}}</div>
 </header>
 <j-person :img="order.manager.profileImage" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
 <j-person  style="top:80px;" :img="order.projectManager.profileImage" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
 <div class="content">
   <group class="contact" style="margin-top:-1.17647059em;" v-if="order.plan.status==1||order.plan.status==2">
-    <j-person :img="order.plan.foreman.profileImage" :name="order.plan.foreman.nickname" :tel="order.plan.foreman.mobile">
+    <j-person type="1" :img="order.plan.foreman.profileImage" :name="order.plan.foreman.nickname" :tel="order.plan.foreman.mobile">
 </div>
 </group>
 
@@ -52,6 +52,7 @@ import XImg from 'vux-components/x-img'
 import Previewer from 'vux-components/previewer'
 import JPerson from '../../components/j-person'
 import axios from 'axios'
+import Status from '../../status'
 try{
   axios.defaults.headers.common['x-user-token'] = JSON.parse(localStorage.getItem("user")).token
 }catch(e){
@@ -63,34 +64,7 @@ export default {
     return {
       order: {},
       imgUrl: Lib.C.imgUrl,
-      zxStatusList: [{
-        status: 0,
-        name: "订单已删除"
-      }, {
-        status: 1,
-        name: "已预约"
-      }, {
-        status: 2,
-        name: "已上门"
-      }, {
-        status: 3,
-        name: "待选方案"
-      }, {
-        status: 4,
-        name: "待支付"
-      }, {
-        status: 5,
-        name: "待施工"
-      }, {
-        status: 6,
-        name: "施工中"
-      }, {
-        status: 7,
-        name: "已完工"
-      }, {
-        status: 8,
-        name: "订单已取消"
-      }],
+      Status,
       options: {
         getThumbBoundsFn(index) {
           let thumbnail = document.querySelectorAll('.product-img')[index]
