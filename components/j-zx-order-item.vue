@@ -2,19 +2,32 @@
 <div class="zc-order">
     <div class="zc-line-1">
         <div class="zc-user-name">{{order.customerName}}</div>
+        <div class="zc-user-address">{{order.orderLocation+order.orderAddress}}</div>
         <div class="zc-user-more" v-tap="viewDetail(order.orderNo)">查看详情</div>
     </div>
     <div class="zc-line-2">
         <div class="zc-order-date"><img src="../assets/images/time.png">{{getTime(order.orderTime)}}</div>
-        <div class="zc-order-status">{{zcStatusList[order.status].name}}</div>
+        <div class="zc-order-status">{{zxStatusList[order.status].name}}</div>
     </div>
-    <div class="zc-line-3">
+    <div class="zc-line-3" v-if="order.manager.nickname">
         <div class="zc-butler-img"><img :src="order.manager.profileImage"></div>
         <div class="zc-butler-name">{{order.manager.nickname}}</div>
-        <div class="zc-butler-tel" onclick="location.href='tel:{{order.manager.mobuil}}'"><img src="../assets/images/tel.png"></div>
+        <div class="zc-butler-tel" onclick="location.href='tel:{{order.manager.mobile}}'"><img src="../assets/images/tel.png"></div>
     </div>
-    <div class="zc-line-4" v-if="order.status > 1">
-        <div class="zc-count">总额<span>{{order.normalAmountTotal + order.specialAmountTotal|currency "￥" 2}}</span></div>
+    <div class="zc-line-3" v-if="order.projectManager.nickname">
+        <div class="zc-butler-img"><img :src="order.projectManager.profileImage"></div>
+        <div class="zc-butler-name">{{order.projectManager.nickname}}</div>
+        <div class="zc-butler-tel" onclick="location.href='tel:{{order.projectManager.mobile}}'"><img src="../assets/images/tel.png"></div>
+    </div>
+    <div class="zc-line-3" v-if="order.planList[0].foreman.nickname">
+        <div class="zc-butler-img"><img :src="order.planList[0].foreman.profileImage"></div>
+        <div class="zc-butler-name">{{order.planList[0].foreman.nickname}}</div>
+        <div class="zc-butler-tel" onclick="location.href='tel:{{order.planList[0].foreman.mobile}}'"><img src="../assets/images/tel.png"></div>
+    </div>
+    <div class="zc-line-3" v-if="order.planList.length===2">
+        <div class="zc-butler-img"><img :src="order.planList[1].foreman.profileImage"></div>
+        <div class="zc-butler-name">{{order.planList[1].foreman.nickname}}</div>
+        <div class="zc-butler-tel" onclick="location.href='tel:{{order.planList[1].foreman.mobile}}'"><img src="../assets/images/tel.png"></div>
     </div>
 </div>
 </template>
@@ -23,7 +36,7 @@
 export default {
     data() {
         return {
-            zcStatusList: [{
+            zxStatusList: [{
                 status: 0,
                 name: "订单已删除"
             }, {
@@ -31,25 +44,25 @@ export default {
                 name: "已预约"
             }, {
                 status: 2,
-                name: "待确认"
+                name: "已上门"
             }, {
                 status: 3,
-                name: "待付款"
+                name: "待选方案"
             }, {
                 status: 4,
-                name: "待收货"
+                name: "待支付"
             }, {
                 status: 5,
-                name: "已收货"
+                name: "待施工"
             }, {
                 status: 6,
-                name: "退款中"
+                name: "施工中"
             }, {
                 status: 7,
-                name: "已退款"
+                name: "已完工"
             }, {
                 status: 8,
-                name: "已取消"
+                name: "订单已取消"
             }]
         }
     },
@@ -63,7 +76,7 @@ export default {
             return Y + M + D
         },
         viewDetail(orderNo) {
-            window.location.href = `zc-order.html?orderNo=${orderNo}`
+            window.location.href = `zx-order.html?orderNo=${orderNo}`
         }
     },
     props: {
@@ -102,6 +115,13 @@ export default {
             font-size: 16px;
             color: #393939;
         }
+        .zc-user-address {
+            position: absolute;
+            bottom: 6px;
+            left: 15px;
+            font-size: 12px;
+            color: #393939;
+        }
         .zc-user-more {
             position: absolute;
             top: 19px;
@@ -127,6 +147,15 @@ export default {
                 width: 12px;
                 margin-right: 5px;
             }
+        }
+        .zc-order-shop {
+            position: absolute;
+            top: 0;
+            left: 15px;
+            height: 40px;
+            line-height: 40px;
+            font-size: 14px;
+            color: #393939;
         }
         .zc-order-status {
             position: absolute;

@@ -2,19 +2,19 @@
 <div class="zc-order">
     <div class="zc-line-1">
         <div class="zc-user-name">{{order.customerName}}</div>
-        <div class="zc-user-more" v-tap="viewDetail(order.orderNo)">查看详情</div>
+        <!-- <div class="zc-user-address">{{order.userAddress}}</div> -->
     </div>
     <div class="zc-line-2">
-        <div class="zc-order-date"><img src="../assets/images/time.png">{{getTime(order.orderTime)}}</div>
+        <div class="zc-order-shop">{{order.store.name}}</div>
         <div class="zc-order-status">{{zcStatusList[order.status].name}}</div>
     </div>
     <div class="zc-line-3">
         <div class="zc-butler-img"><img :src="order.manager.profileImage"></div>
         <div class="zc-butler-name">{{order.manager.nickname}}</div>
-        <div class="zc-butler-tel" onclick="location.href='tel:{{order.manager.mobuil}}'"><img src="../assets/images/tel.png"></div>
+        <div class="zc-butler-tel" onclick="location.href='tel:{{order.manager.mobile}}'"><img src="../assets/images/tel.png"></div>
     </div>
-    <div class="zc-line-4" v-if="order.status > 1">
-        <div class="zc-count">总额<span>{{order.normalAmountTotal + order.specialAmountTotal|currency "￥" 2}}</span></div>
+    <div class="zc-line-4" v-if="order.status > 0">
+        <div class="zc-count">退款金额<span>{{order.customerRefundAmount|currency "￥" 2}}</span></div>
     </div>
 </div>
 </template>
@@ -61,9 +61,6 @@ export default {
             var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
             var D = (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate());
             return Y + M + D
-        },
-        viewDetail(orderNo) {
-            window.location.href = `zc-order.html?orderNo=${orderNo}`
         }
     },
     props: {
@@ -102,31 +99,20 @@ export default {
             font-size: 16px;
             color: #393939;
         }
-        .zc-user-more {
-            position: absolute;
-            top: 19px;
-            right: 15px;
-            font-size: 12px;
-            color: #3ba794;
-        }
     }
     .zc-line-2 {
         height: 40px;
         width: 100%;
         border-bottom: 1px solid #eee;
         position: relative;
-        .zc-order-date {
+        .zc-order-shop {
             position: absolute;
-            top: 14px;
+            top: 0;
             left: 15px;
-            font-size: 12px;
+            height: 40px;
+            line-height: 40px;
+            font-size: 14px;
             color: #393939;
-            img {
-                vertical-align: middle;
-                height: 12px;
-                width: 12px;
-                margin-right: 5px;
-            }
         }
         .zc-order-status {
             position: absolute;
