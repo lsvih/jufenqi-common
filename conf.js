@@ -1,5 +1,5 @@
 
-var server = `http://wx.jufenqi.com/`
+var server = `http://wx.jufenqi.com:8080/`
 var Rxports = {
   appname: `居分期`,
   server: server,
