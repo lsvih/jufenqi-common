@@ -1,31 +1,25 @@
 var Status = {
     zc: [{
         status: 0,
-        name: "订单已删除"
+        name: "已取消"
     }, {
         status: 1,
         name: "已预约"
     }, {
         status: 2,
-        name: "待确认"
+        name: "继续支付"
     }, {
         status: 3,
-        name: "待付款"
+        name: "待支付"
     }, {
         status: 4,
-        name: "待收货"
+        name: "待确认"
     }, {
         status: 5,
-        name: "已收货"
+        name: "待收货"
     }, {
         status: 6,
-        name: "退款中"
-    }, {
-        status: 7,
-        name: "已退款"
-    }, {
-        status: 8,
-        name: "已取消"
+        name: "已完成"
     }],
     zx: [{
         status: 0,
@@ -54,7 +48,23 @@ var Status = {
     }, {
         status: 8,
         name: "订单已取消"
-    }]
+    }],
+    tk: [{
+        status: 0,
+        name: "已取消"
+    }, {
+        status: 1,
+        name: "退款申请"
+    }, {
+        status: 2,
+        name: "退款中"
+    }, {
+        status: 3,
+        name: "已退款"
+    }, {
+        status: 4,
+        name: "退款失败"
+    }, ]
 }
 
 module.exports = Status
