@@ -44,7 +44,7 @@ var Status = {
         name: "施工中"
     }, {
         status: 7,
-        name: "已完工"
+        name: "已完成"
     }, {
         status: 8,
         name: "订单已取消"
