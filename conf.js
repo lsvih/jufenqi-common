@@ -9,9 +9,11 @@ var Rxports = {
     merApi: server + 'merchant/api/',
     loanApi: server + 'loanapplicant/api/',
     wxApi: server + 'wechat/api/',
+    payApi: server + 'payment/api/',
     serverUrl: 'http://101.200.78.103:90/',
     apiUrl: 'http://101.200.78.103:90/jfq/api/web/',
-    imgUrl: 'http://ohej1hvbm.bkt.clouddn.com/'
+    imgUrl: 'http://ohej1hvbm.bkt.clouddn.com/',
+    notifyUrl: 'http://materialorder/materialAppts/noticePaymentResult'
 }
 
 module.exports = Rxports
