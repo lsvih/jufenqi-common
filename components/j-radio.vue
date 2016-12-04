@@ -2,7 +2,7 @@
   <div class="weui_cells_radio">
     <label class="weui_cell weui_cell_radio weui_check_label" for="radio_{{uuid}}_{{index}}" v-for="(index,one) in options">
       <div class="weui_cell_bd weui_cell_primary">
-        <p>{{one | getValue}}</p>
+        <p><img :src="one.icon" v-if='one.icon'>{{one | getValue}}<span>{{one.description?one.description:''}}</span></p>
       </div>
       <div class="weui_cell_ft">
         <input type="radio" class="weui_check" v-model="value" id="radio_{{uuid}}_{{index}}" value="{{one | getKey}}">
@@ -105,5 +105,20 @@ function contains (a, obj) {
 .weui_cell{
   height: 24px;
   font-size: 14px;
+}
+.weui_cell_bd{
+  p{
+    img{
+      height: 20px;
+      width: 20px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    span{
+      margin-left: 10px;
+      font-size: 12px;
+      color:#ec5835;
+    }
+  }
 }
 </style>
