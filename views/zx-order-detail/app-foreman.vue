@@ -1,42 +1,52 @@
 <template>
 <header>
-  <img src="../../assets/images/status.png">
-  <div class="status">{{Status.zx[order.plan.status].name}}</div>
-</header>
-<j-person :img="order.manager.profileImage" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
-<j-person  style="top:80px;" :img="order.projectManager.profileImage" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
-<div class="content">
-  <group class="contact" style="margin-top:-1.17647059em;" v-if="order.plan.status==1||order.plan.status==2">
-    <j-person type="1" :img="order.plan.foreman.profileImage" :name="order.plan.foreman.nickname" :tel="order.plan.foreman.mobile">
-</div>
-</group>
-
-<group title="设计方案" v-if="order.plan.status>=2">
-  <div class="module-item">
-    <scroller lock-y scrollbar-x :height=".8*getScreenWidth()*.63+20+'px'" v-ref:plan>
-      <div class="worker-product-list" :style="{width:order.plan.images.length*(.8*getScreenWidth()+10)+  'px',height:.8*getScreenWidth()*.63+'px'}">
-        <div class="worker-product-item" v-for="preview in order.plan.images" :style="{width: getScreenWidth()*.8 + 'px',height:.8*getScreenWidth()*.63+'px'}">
-          <x-img class="product-img" :scroller="$refs.plan" :src="imgUrl + preview" v-tap="$refs.previewer.show($index)"></x-img>
-        </div>
-      </div>
-    </scroller>
-  </div>
-</group>
-<div v-if="order.plan.status>=2&&order.plan.status<=6">
-  <group title="方案说明">
-    <article>{{order.plan.description}}</article>
-  </group>
-  <group>
-    <div class="zx-line-4">
-      <div class="zx-line-4-name">施工报价</div>
-      <div class="zx-line-4-right">{{order.plan.price|currency "" 2}}</div>
+    <div class="customer">
+        <div class="customer-image"><img :src="order.customerImage"></div>
+        <div class="customer-name">{{order.customerName}}</div>
+        <div class="customer-tel" v-tap="goto('tel:'+order.customerMobile)">{{order.customerMobile}}</div>
     </div>
-  </group>
+    <div class="house">
+        <div class="location">{{order.orderLocation}}</div>
+        <div class="address">{{order.orderAddress}}</div>
+        <div class="appoint-at"><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
+    </div>
+</header>
+<div class="content">
+    <div class="status">
+        <div class="order-status"><img src="../../assets/images/status.png">{{Status.zx[order.status].name}}</div>
+        <div class="order-time">{{getTime(order.createdAt)}}</div>
+    </div>
+    <group class="contact" style="margin-top:-1.17647059em;">
+        <j-person type="0" :img="projectManagerImg" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
+        <j-person v-if="order.status == 1" type="0" :img="foremanImg" :name="order.plan.foreman.nickname" :tel="order.plan.foreman.mobile"></j-person>
+    </group>
 
-</div>
+    <group title="设计方案" v-if="order.plan.status>=2">
+        <div class="module-item">
+            <scroller lock-y scrollbar-x :height=".8*getScreenWidth()*.63+20+'px'" v-ref:plan>
+                <div class="worker-product-list" :style="{width:order.plan.images.length*(.8*getScreenWidth()+10)+  'px',height:.8*getScreenWidth()*.63+'px'}">
+                    <div class="worker-product-item" v-for="preview in order.plan.images" :style="{width: getScreenWidth()*.8 + 'px',height:.8*getScreenWidth()*.63+'px'}">
+                        <x-img class="product-img" :scroller="$refs.plan" :src="imgUrl + preview" v-tap="$refs.previewer.show($index)"></x-img>
+                    </div>
+                </div>
+            </scroller>
+        </div>
+    </group>
+    <div v-if="order.plan.status>=2&&order.plan.status<=6">
+        <group title="方案说明">
+            <article>{{order.plan.description}}</article>
+        </group>
+        <group>
+            <div class="zx-line-4">
+                <div class="zx-line-4-name">施工报价</div>
+                <div class="zx-line-4-right">{{order.plan.price|currency "" 2}}</div>
+            </div>
+        </group>
+
+    </div>
 </div>
 <div class="status-3-btn" v-if="order.plan.status === 2&&(!order.plan.updated)" v-tap="modify()">
-  <div class="btn-right">编辑</div>
+    <div class="btn-right">编辑</div>
 </div>
 <!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
 <previewer :list="order.plan.images" v-ref:previewer :options="options"></previewer>
@@ -51,74 +61,92 @@ import Scroller from 'vux-components/scroller'
 import XImg from 'vux-components/x-img'
 import Previewer from 'vux-components/previewer'
 import JPerson from '../../components/j-person'
+import projectManagerImg from '../../assets/images/role/project-manager.png'
+import foremanImg from '../../assets/images/role/foreman.png'
 import axios from 'axios'
 import Status from '../../status'
-try{
-  axios.defaults.headers.common['x-user-token'] = JSON.parse(localStorage.getItem("user")).token
-}catch(e){
-  localStorage.clear()
-  window.location.href = `./wxAuth.html?url=index.html`
+try {
+    let now = Number(new Date().getTime())
+    if (Number(JSON.parse(localStorage.user).expiredAt) < now) {
+        localStorage.removeItem('user')
+        location.href = './wxAuth.html?url=' + encodeURIComponent(location.href)
+    }
+    axios.defaults.headers.common['Authorization'] = JSON.parse(localStorage.getItem("user")).tokenType + ' ' + JSON.parse(localStorage.getItem("user")).token
+} catch (e) {
+    localStorage.clear()
+    window.location.href = `./wxAuth.html?url=index.html`
 }
 export default {
-  data() {
-    return {
-      order: {},
-      imgUrl: Lib.C.imgUrl,
-      Status,
-      options: {
-        getThumbBoundsFn(index) {
-          let thumbnail = document.querySelectorAll('.product-img')[index]
-          let pageYScroll = window.pageYOffset || document.documentElement.scrollTop
-          let rect = thumbnail.getBoundingClientRect()
-          return {
-            x: rect.left,
-            y: rect.top + pageYScroll,
-            w: rect.width
-          }
+    data() {
+        return {
+            order: {},
+            imgUrl: Lib.C.imgUrl,
+            Status,
+            projectManagerImg,
+            foremanImg,
+            options: {
+                getThumbBoundsFn(index) {
+                    let thumbnail = document.querySelectorAll('.product-img')[index]
+                    let pageYScroll = window.pageYOffset || document.documentElement.scrollTop
+                    let rect = thumbnail.getBoundingClientRect()
+                    return {
+                        x: rect.left,
+                        y: rect.top + pageYScroll,
+                        w: rect.width
+                    }
+                }
+            }
         }
-      }
-    }
-  },
-  ready() {
-    axios.get(`${Lib.C.orderApi}decorationPlans/${Lib.M.GetRequest().planId}`).then((res) => {
-      this.order = res.data.data
-    }).catch((res) => {
-      alert("获取订单失败，请稍候再试QAQ")
-    })
-  },
-  components: {
-    Group,
-    Cell,
-    XButton,
-    Scroller,
-    XImg,
-    Previewer,
-    JPerson
-  },
-  methods: {
-    getScreenWidth() {
-      return document.body.clientWidth
     },
-    modify(){
-      window.location.href = `./modify.html?planId=${Lib.M.GetRequest().planId}`
+    ready() {
+        axios.get(`${Lib.C.orderApi}decorationPlans/${Lib.M.GetRequest().planId}`).then((res) => {
+            this.order = res.data.data
+        }).catch((res) => {
+            alert("获取订单失败，请稍候再试QAQ")
+        })
+    },
+    components: {
+        Group,
+        Cell,
+        XButton,
+        Scroller,
+        XImg,
+        Previewer,
+        JPerson
+    },
+    methods: {
+        getScreenWidth() {
+            return document.body.clientWidth
+        },
+        modify() {
+            window.location.href = `./modify.html?planId=${Lib.M.GetRequest().planId}`
+        },
+        goto(url) {
+            location.href = url
+        },
+        getTime(timeStamp) {
+            var d = new Date(timeStamp * 1000);
+            var Y = d.getFullYear() + '-';
+            var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
+            var D = (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate());
+            return Y + M + D
+        },
     }
-  }
 }
 </script>
 
 <style>
 body {
-  background-color: #eee;
+    background-color: #eee;
 }
 
 article {
-  padding: 15px;
-  font-size: 12px;
-  color: #393939;
+    padding: 15px;
+    font-size: 12px;
+    color: #393939;
 }
 </style>
-<style scoped lang="less">
-@import 'zx-order-detail.less';
+<style scoped lang="less">@import 'zx-order-detail.less';
 
 .status-3-btn {
     position: relative;

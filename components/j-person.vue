@@ -3,7 +3,7 @@
 <div class="person" v-if="Type === '0'">
     <div class="zx-img"><img :src="Image"></div>
     <div class="zx-name">{{Name}}</div>
-    <div class="zx-tel" onclick="location.href='tel:{{Tel}}'"><img src="../assets/images/tel-s.png"></div>
+    <div class="zx-tel" onclick="location.href='tel:{{Tel}}'"><img src="../assets/images/tel.png"></div>
 </div>
 <div class="zc-person" v-else>
     <div class="zc-img"><img :src="Image"></div>
@@ -52,37 +52,35 @@ export default {
 
 <style scoped lang="less">
 .person {
-    height: 50px;
+    height: 30px;
     width: 100%;
     border-bottom: 1px solid #eee;
     background-color: #fff;
-    position: fixed;
-    top: 30px;
-    left: 0;
+    position: relative;
     z-index: 20;
     .zx-img {
         position: absolute;
         top: 5px;
         left: 15px;
-        height: 40px;
-        width: 40px;
-        border-radius: 20px;
+        height: 20px;
+        width: 20px;
         img {
             height: 100%;
             width: 100%;
-            border-radius: 50%;
         }
     }
     .zx-name {
         position: absolute;
-        bottom: 15px;
-        left: 65px;
-        font-size: 16px;
+        top:0;
+        height: 30px;
+        line-height: 30px;
+        left: 45px;
+        font-size: 12px;
         color: #393939;
     }
     .zx-tel {
         position: absolute;
-        top: 15px;
+        top: 5px;
         right: 15px;
         height: 20px;
         width: 20px;
