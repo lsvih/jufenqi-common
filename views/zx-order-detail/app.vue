@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import Conf from 'assets/Lib.js'
+import Lib from 'assets/Lib.js'
 import Group from 'vux-components/group'
 import Cell from 'vux-components/cell'
 import XButton from 'vux-components/x-button'
