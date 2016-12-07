@@ -17,11 +17,12 @@
         <div class="order-time">{{getTime(order.createdAt)}}</div>
     </div>
     <group class="contact" style="margin-top:-1.17647059em;">
+        <j-person type="0" :img="managerImg" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
         <j-person type="0" :img="projectManagerImg" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
         <j-person v-if="order.status == 1" type="0" :img="foremanImg" :name="order.plan.foreman.nickname" :tel="order.plan.foreman.mobile"></j-person>
     </group>
 
-    <group title="设计方案" v-if="order.plan.status>=2">
+    <group title="设计方案" v-if="order.plan.status>=2&&order.plan.images.length">
         <div class="module-item">
             <scroller lock-y scrollbar-x :height=".8*getScreenWidth()*.63+20+'px'" v-ref:plan>
                 <div class="worker-product-list" :style="{width:order.plan.images.length*(.8*getScreenWidth()+10)+  'px',height:.8*getScreenWidth()*.63+'px'}">
@@ -33,13 +34,14 @@
         </div>
     </group>
     <div v-if="order.plan.status>=2&&order.plan.status<=6">
-        <group title="方案说明">
+        <group title="方案说明" v-if='order.plan.description'>
             <article>{{order.plan.description}}</article>
         </group>
         <group>
             <div class="zx-line-4">
                 <div class="zx-line-4-name">施工报价</div>
-                <div class="zx-line-4-right">{{order.plan.price|currency "" 2}}</div>
+                <div class="zx-line-4-right" v-if='order.plan.price'>{{order.plan.price|currency "" 2}}</div>
+                <div class="zx-line-4-right" v-else>等待报价</div>
             </div>
         </group>
 
@@ -63,6 +65,7 @@ import Previewer from 'vux-components/previewer'
 import JPerson from '../../components/j-person'
 import projectManagerImg from '../../assets/images/role/project-manager.png'
 import foremanImg from '../../assets/images/role/foreman.png'
+import managerImg from '../../assets/images/role/manager.png'
 import axios from 'axios'
 import Status from '../../status'
 try {
@@ -83,6 +86,7 @@ export default {
             imgUrl: Lib.C.imgUrl,
             Status,
             projectManagerImg,
+            managerImg,
             foremanImg,
             options: {
                 getThumbBoundsFn(index) {
