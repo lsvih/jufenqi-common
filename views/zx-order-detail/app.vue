@@ -1,19 +1,27 @@
 <template>
 <header>
-    <img src="../../assets/images/status.png">
-    <div class="status">{{Status.zx[order.status].name}}</div>
-    <div class="btn" v-if="order.status==1&&Role === 'user'" v-tap="cancelOrder()">取消预约</div>
-</header>
-<j-person :img="order.manager.profileImage" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
-<j-person style="top:80px;" :img="order.projectManager.profileImage" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
-<div class="content">
-    <group class="contact" style="margin-top:-1.17647059em;" v-if="order.status==1||order.status==2">
-        <j-person type="1" v-for="person in order.planList" :img="person.foreman.profileImage" :name="person.foreman.nickname" :tel="person.foreman.mobile">
-    </group>
-    <div class="select-plan" v-if="order.status==3">
-        <div class="select-item-1" :class="{'active':selectPlan==0}" v-tap="selectPlan = 0">方案一</div>
-        <div class="select-item-2" v-if="order.planList.length === 2" :class="{'active':selectPlan==1}" v-tap="selectPlan = 1">方案二</div>
+  <div class="status">
+      <div class="order-status"><img src="../../assets/images/status.png">{{Status.zx[order.status].name}}</div>
+      <div class="order-time">{{getTime(order.createdAt)}}</div>
+  </div>
+    <div class="user-customer">
+        <div class="user-customer-name">{{order.customerName}}</div>
+        <div class="user-customer-tel" v-tap="goto('tel:'+order.customerMobile)">{{order.customerMobile}}</div>
     </div>
+    <div class="house">
+        <div class="location">{{order.orderLocation}}</div>
+        <div class="address">{{order.orderAddress}}</div>
+        <div class="appoint-at"><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
+    </div>
+</header>
+<div class="content">
+    <group class="contact" style="margin-top:-1.17647059em;">
+      <j-person type="0" :img="managerImg" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
+        <j-person type="0" :img="projectManagerImg" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
+        <div v-if="order.status == 1">
+            <j-person v-for="plan in order.planList" type="0" :img="foremanImg" :name="plan.foreman.nickname" :tel="plan.foreman.mobile"></j-person>
+        </div>
+    </group>
 
     <group title="设计方案" v-if="order.status>=3">
         <div class="module-item">
@@ -27,9 +35,8 @@
         </div>
     </group>
     <div class="contact" v-if="order.status>=3">
-        <j-person type="1" :img="order.planList[selectPlan].foreman.profileImage" :name="order.planList[selectPlan].foreman.nickname" :tel="order.planList[selectPlan].foreman.mobile">
+        <j-person v-for="plan in order.planList" v-if="order.status == 1" type="0" :img="foremanImg" :name="plan.foreman.nickname" :tel="plan.foreman.mobile"></j-person>
     </div>
-
     <div v-if="order.status>=3&&order.status<=6">
         <group title="方案说明">
             <article>{{order.planList[selectPlan].description}}</article>
@@ -40,8 +47,8 @@
                 <div class="zx-line-4-right">{{order.planList[selectPlan].price|currency "" 2}}</div>
             </div>
         </group>
-
     </div>
+</div>
 </div>
 <div class="status-3-btn" v-if="order.status === 3&&Role === 'user'">
     <div class="btn-left" v-tap="cancelOrder(true)"><img src="./change.png">更换工长</div>
@@ -55,7 +62,7 @@
 </div>
 <!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
 <previewer :list="order.planList[0].images" v-ref:previewer :options="options"></previewer>
-<previewer v-if="order.planList[1]" :list="order.planList[1].images" v-ref:previewer :options="options"></previewer>
+<previewer v-if="order.planList.length" :list="order.planList[1].images" v-ref:previewer :options="options"></previewer>
 </template>
 
 <script>
@@ -67,18 +74,21 @@ import Scroller from 'vux-components/scroller'
 import XImg from 'vux-components/x-img'
 import Previewer from 'vux-components/previewer'
 import JPerson from '../../components/j-person'
+import projectManagerImg from '../../assets/images/role/project-manager.png'
+import foremanImg from '../../assets/images/role/foreman.png'
+import managerImg from '../../assets/images/role/manager.png'
 import axios from 'axios'
 import Status from '../../status'
 try {
-  let now = Number(new Date().getTime())
-  if (Number(JSON.parse(localStorage.user).expiredAt) < now) {
-    localStorage.removeItem('user')
-    location.href = './wxAuth.html?url=' + encodeURIComponent(location.href)
-  }
-  axios.defaults.headers.common['Authorization'] = JSON.parse(localStorage.getItem("user")).tokenType + ' ' + JSON.parse(localStorage.getItem("user")).token
+    let now = Number(new Date().getTime())
+    if (Number(JSON.parse(localStorage.user).expiredAt) < now) {
+        localStorage.removeItem('user')
+        location.href = './wxAuth.html?url=' + encodeURIComponent(location.href)
+    }
+    axios.defaults.headers.common['Authorization'] = JSON.parse(localStorage.getItem("user")).tokenType + ' ' + JSON.parse(localStorage.getItem("user")).token
 } catch (e) {
-  localStorage.clear()
-  window.location.href = `./wxAuth.html?url=index.html`
+    localStorage.clear()
+    window.location.href = `./wxAuth.html?url=index.html`
 }
 export default {
     data() {
@@ -87,6 +97,9 @@ export default {
             selectPlan: 0,
             imgUrl: Lib.C.imgUrl,
             Status,
+            foremanImg,
+            managerImg,
+            projectManagerImg,
             options: {
                 getThumbBoundsFn(index) {
                     let thumbnail = document.querySelectorAll('.product-img')[index]
@@ -104,8 +117,9 @@ export default {
     ready() {
         axios.get(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}`).then((res) => {
             this.order = res.data.data
-        }).catch((res) => {
+        }).catch((err) => {
             alert("获取订单失败，请稍候再试QAQ")
+            throw err
         })
     },
     components: {
@@ -115,7 +129,8 @@ export default {
         Scroller,
         XImg,
         Previewer,
-        JPerson
+        JPerson,
+        foremanImg,
     },
     props: {
         role: {
@@ -131,6 +146,13 @@ export default {
     methods: {
         getScreenWidth() {
             return document.body.clientWidth
+        },
+        getTime(timeStamp) {
+            var d = new Date(timeStamp * 1000);
+            var Y = d.getFullYear() + '-';
+            var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
+            var D = (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate());
+            return Y + M + D
         },
         cancelOrder(isJump) {
             axios.post(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}/confirmCancel`).then((res) => {

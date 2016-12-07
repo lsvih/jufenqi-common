@@ -60,7 +60,6 @@ export default {
     position: relative;
     border-bottom: 1px solid #eee;
     font-size: 12px;
-
     img {
         position: absolute;
         top: 10px;
@@ -95,4 +94,5 @@ export default {
         color:#393939;
     }
 }
+
 </style>
