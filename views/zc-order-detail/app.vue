@@ -93,19 +93,21 @@ import JPerson from '../../components/j-person'
 import axios from 'axios'
 import Status from '../../status'
 try {
-  let now = Number(new Date().getTime())
-  if (Number(JSON.parse(localStorage.user).expiredAt) < now) {
-    localStorage.removeItem('user')
-    location.href = './wxAuth.html?url=' + encodeURIComponent(location.href)
-  }
-  axios.defaults.headers.common['Authorization'] = JSON.parse(localStorage.getItem("user")).tokenType + ' ' + JSON.parse(localStorage.getItem("user")).token
+    let now = Number(new Date().getTime())
+    if (Number(JSON.parse(localStorage.user).expiredAt) < now) {
+        localStorage.removeItem('user')
+        location.href = './wxAuth.html?url=' + encodeURIComponent(location.href)
+    }
+    axios.defaults.headers.common['Authorization'] = JSON.parse(localStorage.getItem("user")).tokenType + ' ' + JSON.parse(localStorage.getItem("user")).token
 } catch (e) {
-  localStorage.clear()
-  window.location.href = `./wxAuth.html?url=index.html`
+    localStorage.clear()
+    window.location.href = `./wxAuth.html?url=index.html`
 }
 export default {
     data() {
         return {
+            orderNo: Lib.M.GetRequest().orderNo,
+            apptNo: Lib.M.GetRequest().apptNo,
             order: {},
             Status,
             payments: [{
@@ -125,11 +127,19 @@ export default {
         }
     },
     ready() {
-        axios.get(`${Lib.C.mOrderApi}materialOrders/${Lib.M.GetRequest().orderNo}`).then((res) => {
-            this.order = res.data.data
-        }).catch((res) => {
-            alert("获取订单失败，请稍候再试QAQ")
-        })
+        if (this.orderNo != 0) {
+            axios.get(`${Lib.C.mOrderApi}materialOrders/${this.orderNo}`).then((res) => {
+                this.order = res.data.data
+            }).catch((res) => {
+                alert("获取订单失败，请稍候再试QAQ")
+            })
+        }else{
+          axios.get(`${Lib.C.mOrderApi}materialAppts/${this.apptNo}`).then((res) => {
+              this.order = res.data.data
+          }).catch((res) => {
+              alert("获取订单失败，请稍候再试QAQ")
+          })
+        }
     },
     components: {
         Group,

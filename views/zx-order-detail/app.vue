@@ -1,9 +1,9 @@
 <template>
 <header>
-  <div class="status">
-      <div class="order-status"><img src="../../assets/images/status.png">{{Status.zx[order.status].name}}</div>
-      <div class="order-time">{{getTime(order.createdAt)}}</div>
-  </div>
+    <div class="status">
+        <div class="order-status"><img src="../../assets/images/status.png">{{Status.zx[order.status].name}}</div>
+        <div class="order-time">{{getTime(order.createdAt)}}</div>
+    </div>
     <div class="user-customer">
         <div class="user-customer-name">{{order.customerName}}</div>
         <div class="user-customer-tel" v-tap="goto('tel:'+order.customerMobile)">{{order.customerMobile}}</div>
@@ -16,7 +16,7 @@
 </header>
 <div class="content">
     <group class="contact" style="margin-top:-1.17647059em;">
-      <j-person type="0" :img="managerImg" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
+        <j-person type="0" :img="managerImg" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
         <j-person type="0" :img="projectManagerImg" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
         <div v-if="order.status == 1">
             <j-person v-for="plan in order.planList" type="0" :img="foremanImg" :name="plan.foreman.nickname" :tel="plan.foreman.mobile"></j-person>
@@ -54,11 +54,11 @@
     <div class="btn-left" v-tap="cancelOrder(true)"><img src="./change.png">更换工长</div>
     <div class="btn-right" v-tap="selectCurrentlyPlan()">选择当前方案</div>
 </div>
-<div v-if="Role === 'manager'">
-    <div class="status-3-btn" v-if="order.status == 1" v-tap="visit()">已上门</div>
-    <div class="status-3-btn" v-if="order.status == 4" v-tap="pay()">已支付</div>
-    <div class="status-3-btn" v-if="order.status == 5&&order.payed" v-tap="start()">已开工</div>
-    <div class="status-3-btn" v-if="order.status == 6" v-tap="complete()">已完工</div>
+<div v-if="Role === 'manager'&&order.status!=2" class="btn">
+    <div v-if="order.status == 1" v-tap="visit()">已上门</div>
+    <div v-if="order.status == 4" v-tap="pay()">已支付</div>
+    <div v-if="order.status == 5&&order.payed" v-tap="start()">已开工</div>
+    <div v-if="order.status == 6" v-tap="complete()">已完工</div>
 </div>
 <!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
 <previewer :list="order.planList[0].images" v-ref:previewer :options="options"></previewer>
@@ -255,4 +255,14 @@ article {
         right: 0;
     }
 }
-</style>
+.btn {
+    position: relative;
+    height: 44px;
+    width: calc(~"100% - 30px");
+    margin: 50px 15px 0;
+    line-height: 44px;
+    text-align: center;
+    background-color: rgb(158,188,43);
+    border-radius: 5px;
+    color: #fff;
+}</style>
