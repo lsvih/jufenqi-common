@@ -54,11 +54,11 @@
     <div class="btn-left" v-tap="cancelOrder(true)"><img src="./change.png">更换工长</div>
     <div class="btn-right" v-tap="selectCurrentlyPlan()">选择当前方案</div>
 </div>
-<div v-if="Role === 'manager'&&order.status!=2" class="btn">
-    <div v-if="order.status == 1" v-tap="visit()">已上门</div>
-    <div v-if="order.status == 4" v-tap="pay()">已支付</div>
-    <div v-if="order.status == 5&&order.payed" v-tap="start()">已开工</div>
-    <div v-if="order.status == 6" v-tap="complete()">已完工</div>
+<div v-if="Role === 'manager'&&order.status!=2">
+    <div class="btn" v-if="order.status == 1" v-tap="visit()">已上门</div>
+    <div class="btn" v-if="order.status == 4" v-tap="pay()">已支付</div>
+    <div class="btn" v-if="order.status == 5&&order.payed" v-tap="start()">已开工</div>
+    <div class="btn" v-if="order.status == 6" v-tap="complete()">已完工</div>
 </div>
 <!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
 <previewer :list="order.planList[0].images" v-ref:previewer :options="options"></previewer>
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import Lib from 'assets/Lib.js'
+import Conf from 'assets/Lib.js'
 import Group from 'vux-components/group'
 import Cell from 'vux-components/cell'
 import XButton from 'vux-components/x-button'
