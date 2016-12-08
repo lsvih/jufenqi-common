@@ -1,8 +1,9 @@
 <template>
 <header>
     <img src="../../assets/images/status.png">
-    <div class="status">{{Status.zc[order.status].name}}</div>
-    <div class="btn" v-if="(order.status==1||order.status==2)&&Role === 'user'" v-tap="cancelOrder()">取消{{order.status == 1?'预约':'订单'}}</div>
+    <div class="status" v-if='order.status == 2&&order.waitPaymentConfirm'>等待支付结果</div>
+    <div class="status" v-else>{{Status.zc[order.status].name}}</div>
+    <div class="btn" v-if="(order.status==1||order.status==2)&&Role === 'user'&&!order.waitPaymentConfirm" v-tap="cancelOrder()">取消{{order.status == 1?'预约':'订单'}}</div>
     <div class="time" v-if="Role == 'manager'">{{getTime(order.createdAt)}}</div>
 </header>
 <div class="user" v-if="Role !== 'user'" :style="{height:order.orderTime?'110px':'80px'}">
@@ -67,7 +68,7 @@
             </div>
         </group>
 
-        <group v-if="order.status == 2&&Role === 'user'">
+        <group v-if="order.status == 2&&Role === 'user'&&!order.waitPaymentConfirm">
             <div class="sumbit-order active" v-tap="goto('./pay.html?apptNo='+order.apptNo)">继续支付</div>
         </group>
         <group v-if="order.status == 1&&Role === 'user'">
@@ -467,7 +468,6 @@ header {
         position: absolute;
         left: 38px;
         top: 9px;
-        width: 60px;
         height: 12px;
         font-size: 12px;
         color: #393939;
