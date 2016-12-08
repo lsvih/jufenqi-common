@@ -122,6 +122,7 @@
     </div>
 </div>
 <loading :show.sync="showLoading" text="正在加载,请稍候"></loading>
+<popup-picker title="分期数" :data="insNumberList" :show.sync="showInsNumberPicker" :columns="1" :show-cell="false" :value.sync="insNumberSelect" @on-hide="onHideInsSelect" v-if="role == 'guide'" show-name v-ref:insNumber></popup-picker>
 
 <div v-if="order.status == 3&&Role === 'guide'">
     <div class="sumbit-order active" v-if="order.status == 3&&Role === 'guide'&&order.appt.payMethod == 1" v-tap="pay()">用户已付款</div>
@@ -138,6 +139,7 @@ import JPerson from '../../components/j-person'
 import clerkImg from '../../assets/images/role/clerk.png'
 import guideImg from '../../assets/images/role/guide.png'
 import Loading from 'vux-components/loading'
+import PopupPicker from 'vux-components/popup-picker'
 import axios from 'axios'
 import Status from '../../status'
 try {
@@ -169,7 +171,10 @@ export default {
                 value: '分期购买'
             }],
             payWay: "",
-            showLoading: false
+            showLoading: false,
+            showInsNumberPicker: false,
+            insNumberList: [],
+            insNumberSelect: [],
         }
     },
     ready() {
@@ -191,7 +196,8 @@ export default {
         Group,
         Cell,
         JPerson,
-        Loading
+        Loading,
+        PopupPicker
     },
     props: {
         role: {
@@ -283,7 +289,7 @@ export default {
             this.showLoading = true
             let sbList = []
             this.order.orders.forEach((e) => {
-                sbList.push([e.storeId,e.brandId])
+                sbList.push([e.storeId, e.brandId])
             })
             let storeList = []
             sbList.forEach((sb) => {
@@ -344,14 +350,29 @@ export default {
                 }
             }).then((res) => {
                 if (res.data.data[0].bankBranchPeriod == null) {
-
-                } else {
-                    let bbpId = res.data.data[0].bankBranchPeriod.id
-                    axios.post(`${Lib.C.mOrderApi}materialOrders/${orderNo}/confirmPayment`, {
+                    axios.get(`${Lib.C.loanApi}bank-branches/${res.data.data[0].bankBranch.id}`, {
                         params: {
-                            bankBranchPeriodId: bbpId
+                            expand: 'bankBranchPeriods'
                         }
                     }).then((res) => {
+                        this.insNumberList = []
+                        res.data.data.bankBranchPeriods.map((e) => {
+                            this.insNumberList.push({
+                                name: e.name,
+                                value: String(e.id),
+                            })
+                        })
+                        this.showInsNumberPicker = true
+                        this.showLoading = false
+                        console.log(this.insNumberList, this.showInsNumberPicker)
+                    }).catch((err) => {
+                        alert('网络连接失败，请重试')
+                        this.showLoading = false
+                        throw err
+                    })
+                } else {
+                    let bbpId = res.data.data[0].bankBranchPeriod.id
+                    axios.post(`${Lib.C.mOrderApi}materialOrders/${orderNo}/confirmPayment?bankBranchPeriodId=${bbpId}`).then((res) => {
                         alert('确认分期成功！')
                         location.reload()
                     }).catch((err) => {
@@ -365,6 +386,18 @@ export default {
                 this.showLoading = false
                 throw err
             })
+        },
+        onHideInsSelect() {
+            if (this.insNumberSelect.length) {
+                axios.post(`${Lib.C.mOrderApi}materialOrders/${this.orderNo}/confirmPayment?bankBranchPeriodId=${this.insNumberSelect[0]}`).then((res) => {
+                    alert('确认分期成功！')
+                    location.reload()
+                }).catch((err) => {
+                    alert('网络连接失败，请重试')
+                    this.showLoading = false
+                    throw err
+                })
+            }
         }
     }
 }
