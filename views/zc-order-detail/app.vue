@@ -5,16 +5,16 @@
     <div class="btn" v-if="(order.status==1||order.status==2)&&Role === 'user'" v-tap="cancelOrder()">取消预约</div>
     <div class="time" v-if="Role == 'manager'">{{getTime(order.createdAt)}}</div>
 </header>
-<div class="user" v-if="Role === 'manager'" :style="{height:order.orderTime?'110px':'80px'}">
-    <div class="user-img"><img :src="order.customerImage"></div>
-    <div class="user-name">{{order.customerName}}</div>
-    <div class="user-tel" onclick="location.href='tel:{{order.customerMobile}}'">{{order.customerMobile}}</div>
+<div class="user" v-if="Role !== 'user'" :style="{height:order.orderTime?'110px':'80px'}">
+    <div class="user-img"><img :src="order.customerImage||order.appt.customerImage"></div>
+    <div class="user-name">{{order.customerName||order.appt.customerName}}</div>
+    <div class="user-tel" onclick="location.href='tel:{{order.customerMobile||order.appt.customerMobile}}'">{{order.customerMobile||order.appt.customerMobile}}</div>
     <div class="hr"></div>
     <div class="user-time" v-if='order.orderTime'><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
 </div>
-<j-person :img="order.manager.profileImage" :name="order.manager.nickname" :tel="order.manager.mobile" v-else></j-person>
-<div :style="{paddingTop:Role === 'manager'?'0':'80px'}">
-    <div class="zc-list">
+
+<div>
+    <div class="zc-list" v-if="orderNo == 0">
         <group v-for="shop in order.orders">
             <j-person :img="clerkImg" :name="shop.clerkName"></j-person>
             <div class="line-1">
@@ -45,18 +45,68 @@
             </div>
         </group>
 
-        <group title="订单总计">
-            <div class="line-2" v-if="order.status > 1">
+        <group title="订单总计"  v-if="order.status > 1">
+            <div class="line-2">
                 <div class="line-2-title">正价总额</div>
                 <div class="line-2-right">{{getCount("normalAmount",order.orders)|currency "￥" 2}}</div>
             </div>
-            <div class="line-2" v-if="order.status > 1">
+            <div class="line-2">
                 <div class="line-2-title">特价总额</div>
                 <div class="line-2-right">{{getCount("specialAmount",order.orders)|currency "￥" 2}}</div>
             </div>
-            <div class="line-2" style="border-top:5px solid #eee!important;" v-if="order.status > 1 ">
+            <div class="line-2" style="border-top:5px solid #eee!important;">
                 <div class="line-2-title">订单总额</div>
                 <div class="line-2-right">{{getAllCount(order.orders)|currency "￥" 2}}</div>
+            </div>
+        </group>
+
+        <group v-if="order.status == 2&&Role === 'user'">
+            <div class="line-2" style="border-bottom:1px solid #eee;height:30px;line-height:30px;">
+                <div class="line-2-title" style="line-height:30px">请选择您的购买方式</div>
+            </div>
+            <j-radio :options="payments" @on-change="selectPay"></j-radio>
+        </group>
+        <group v-if="order.status == 2&&Role === 'user'">
+            <div class="sumbit-order" :class="{'active':payWay!==''}" v-tap="submitOrder">确认订单</div>
+        </group>
+        <group v-if="order.status > 2" title="支付方式">
+            <div class="line-2" v-if="order.payMethod == 2">
+                <div class="line-2-title">分期支付</div>
+                <div class="line-2-right" style="color:#393939;">{{order.stageCount}}期</div>
+            </div>
+            <div class="line-2" v-if="order.payMethod == 1">
+                <div class="line-2-title">全款支付</div>
+            </div>
+        </group>
+    </div>
+    <div class="zc-list" v-else>
+        <group>
+            <j-person :img="clerkImg" :name="order.clerkName"></j-person>
+            <div class="line-1">
+                <div class="line-1-left">{{order.storeName}}</div>
+                <div class="btn" v-if="order.status==5&&Role === 'user'" onclick="location.href='order-judge.html'">去评价</div>
+            </div>
+            <div class='line-1'>
+                <div class="line-1-left" style="font-size:12px;">{{order.storeAddress}}</div>
+                <div class="line-1-tel" v-tap="goto('tel:'+order.storePhone)"><img src="../../assets/images/tel.png"></div>
+            </div>
+            <cell class="zc-cell">
+                <div class="zc-name">{{order.brandName}}</div>
+            </cell>
+            <div class="line-2" v-if="order.status > 1">
+                <div class="line-2-title">正价总额</div>
+                <div class="line-2-right">{{order.normalAmount|currency "￥" 2}}</div>
+            </div>
+            <div class="line-2" v-if="order.status > 1">
+                <div class="line-2-title">特价总额</div>
+                <div class="line-2-right">{{order.specialAmount|currency "￥" 2}}</div>
+            </div>
+            <div class="line-2" style="border-top:5px solid #eee!important;" v-if="order.status > 1 ">
+                <div class="line-2-title">总额</div>
+                <div class="line-2-right">{{order.normalAmount+order.specialAmount|currency "￥" 2}}</div>
+            </div>
+            <div class="line-3" v-if="(order.status ==1||order.status == 2||order.status ==5)&&order.appt.orderTime">
+                <div class="appoint-at" v-if="order.status == 1"><img src="../../assets/images/time.png">{{getTime(order.appt.orderTime)}}</div>
             </div>
         </group>
 
@@ -91,6 +141,7 @@ import Lib from 'assets/Lib.js'
 import Group from 'vux-components/group'
 import Cell from 'vux-components/cell'
 import JRadio from '../../components/j-radio'
+import managerImg from '../../assets/images/role/manager.png'
 import PopupPicker from 'vux-components/popup-picker'
 import JPerson from '../../components/j-person'
 import clerkImg from '../../assets/images/role/clerk.png'
@@ -111,6 +162,7 @@ export default {
     data() {
         return {
             clerkImg,
+            managerImg,
             orderNo: Lib.M.GetRequest().orderNo,
             apptNo: Lib.M.GetRequest().apptNo,
             order: {},
@@ -332,15 +384,15 @@ header {
         line-height: 20px;
         text-align: center;
     }
-    .time{
+    .time {
         position: absolute;
         right: 15px;
-        top:5px;
+        top: 5px;
         height: 30px;
         line-height: 30px;
         text-align: right;
         font-size: 12px;
-        color:#393939;
+        color: #393939;
     }
 }
 .butler {
@@ -418,17 +470,17 @@ header {
             background-color: #88C929;
             border-radius: 2px;
         }
-        .line-1-tel{
-          position: absolute;
-          top:0;
-          right:15px;
-          height: 50px;
-          line-height: 50px;
-          img{
-            vertical-align: middle;
-            height: 20px;
-            width: 20px;
-          }
+        .line-1-tel {
+            position: absolute;
+            top: 0;
+            right: 15px;
+            height: 50px;
+            line-height: 50px;
+            img {
+                vertical-align: middle;
+                height: 20px;
+                width: 20px;
+            }
         }
     }
     .zc-cell {
