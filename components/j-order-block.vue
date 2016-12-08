@@ -4,6 +4,7 @@
     <div class="tel" onclick="location.href='tel:{{Tel}}'">{{Tel}}</div>
     <div class="time">{{Time}}</div>
     <div class="name">{{Name}}</div>
+    <div class="more">查看详情</div>
 </div>
 </template>
 
@@ -92,6 +93,12 @@ export default {
         left:86px;
         top:58px;
         color:#393939;
+    }
+    .more{
+        position: absolute;
+        right:15px;
+        top:34px;
+        color: #3BA794;
     }
 }
 
