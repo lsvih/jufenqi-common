@@ -79,7 +79,7 @@
             <j-person :img="clerkImg" :name="order.clerkName"></j-person>
             <div class="line-1">
                 <div class="line-1-left">{{order.storeName}}</div>
-                <div class="btn" v-if="order.status==5&&Role === 'user'" onclick="location.href='order-judge.html'">去评价</div>
+                <div class="btn" v-if="order.status==6&&Role === 'user'" onclick="location.href='order-judge.html'">去评价</div>
             </div>
             <div class='line-1'>
                 <div class="line-1-left" style="font-size:12px;">{{order.storeAddress}}</div>
