@@ -3,32 +3,38 @@
     <img src="../../assets/images/status.png">
     <div class="status">{{Status.zc[order.status].name}}</div>
     <div class="btn" v-if="(order.status==1||order.status==2)&&Role === 'user'" v-tap="cancelOrder()">取消预约</div>
+    <div class="time" v-if="Role == 'manager'">{{getTime(order.createdAt)}}</div>
 </header>
-<div class="user" v-if="Role === 'manager'">
+<div class="user" v-if="Role === 'manager'" :style="{height:order.orderTime?'110px':'80px'}">
     <div class="user-img"><img :src="order.customerImage"></div>
     <div class="user-name">{{order.customerName}}</div>
     <div class="user-tel" onclick="location.href='tel:{{order.customerMobile}}'">{{order.customerMobile}}</div>
     <div class="hr"></div>
-    <div class="user-time"><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
+    <div class="user-time" v-if='order.orderTime'><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
 </div>
 <j-person :img="order.manager.profileImage" :name="order.manager.nickname" :tel="order.manager.mobile" v-else></j-person>
 <div :style="{paddingTop:Role === 'manager'?'0':'80px'}">
     <div class="zc-list">
-        <group v-for="shop in order.subOrders">
+        <group v-for="shop in order.orders">
+            <j-person :img="clerkImg" :name="shop.clerkName"></j-person>
             <div class="line-1">
-                <div class="shop-name">{{shop.store.name}}</div>
+                <div class="line-1-left">{{shop.storeName}}</div>
                 <div class="btn" v-if="order.status==5&&Role === 'user'" onclick="location.href='order-judge.html'">去评价</div>
             </div>
-            <cell v-for="zc in shop.brands" class="zc-cell">
-                <div class="zc-name">{{zc}}</div>
+            <div class='line-1'>
+                <div class="line-1-left" style="font-size:12px;">{{shop.storeAddress}}</div>
+                <div class="line-1-tel" v-tap="goto('tel:'+shop.storePhone)"><img src="../../assets/images/tel.png"></div>
+            </div>
+            <cell class="zc-cell">
+                <div class="zc-name">{{shop.brandName}}</div>
             </cell>
             <div class="line-2" v-if="order.status > 1">
                 <div class="line-2-title">正价总额</div>
-                <div class="line-2-right" style="color:rgb(255, 204, 102);">{{shop.normalAmount|currency "￥" 2}}</div>
+                <div class="line-2-right">{{shop.normalAmount|currency "￥" 2}}</div>
             </div>
             <div class="line-2" v-if="order.status > 1">
                 <div class="line-2-title">特价总额</div>
-                <div class="line-2-right" style="color:#88C929;">{{shop.specialAmount|currency "￥" 2}}</div>
+                <div class="line-2-right">{{shop.specialAmount|currency "￥" 2}}</div>
             </div>
             <div class="line-2" style="border-top:5px solid #eee!important;" v-if="order.status > 1 ">
                 <div class="line-2-title">总额</div>
@@ -42,15 +48,15 @@
         <group title="订单总计">
             <div class="line-2" v-if="order.status > 1">
                 <div class="line-2-title">正价总额</div>
-                <div class="line-2-right" style="color:rgb(255, 204, 102);">{{getCount("normalAmount",order.subOrders)|currency "￥" 2}}</div>
+                <div class="line-2-right">{{getCount("normalAmount",order.orders)|currency "￥" 2}}</div>
             </div>
             <div class="line-2" v-if="order.status > 1">
                 <div class="line-2-title">特价总额</div>
-                <div class="line-2-right" style="color:#88C929;">{{getCount("specialAmount",order.subOrders)|currency "￥" 2}}</div>
+                <div class="line-2-right">{{getCount("specialAmount",order.orders)|currency "￥" 2}}</div>
             </div>
             <div class="line-2" style="border-top:5px solid #eee!important;" v-if="order.status > 1 ">
                 <div class="line-2-title">订单总额</div>
-                <div class="line-2-right">{{getAllCount(order.subOrders)|currency "￥" 2}}</div>
+                <div class="line-2-right">{{getAllCount(order.orders)|currency "￥" 2}}</div>
             </div>
         </group>
 
@@ -63,22 +69,19 @@
         <group v-if="order.status == 2&&Role === 'user'">
             <div class="sumbit-order" :class="{'active':payWay!==''}" v-tap="submitOrder">确认订单</div>
         </group>
-        <group v-if="order.status > 2">
-            <div class="line-2" v-if="order.stageCount !== ''">
+        <group v-if="order.status > 2" title="支付方式">
+            <div class="line-2" v-if="order.payMethod == 2">
                 <div class="line-2-title">分期支付</div>
                 <div class="line-2-right" style="color:#393939;">{{order.stageCount}}期</div>
             </div>
-            <div class="line-2" v-else>
+            <div class="line-2" v-if="order.payMethod == 1">
                 <div class="line-2-title">全款支付</div>
             </div>
         </group>
     </div>
 </div>
-<div v-if="Role === 'manager'">
-    <div class="status-3-btn" v-if="order.status == 1" v-tap="look()">已查看</div>
-    <div class="status-3-btn" v-if="order.status == 2&&(!order.managerUploaded)" v-tap="modify()">去编辑</div>
-    <div class="status-3-btn" v-if="order.status == 3" v-tap="pay()">用户已付款</div>
-    <div class="status-3-btn" v-if="order.status == 4&&order.payed" v-tap="getgood()">用户已收货</div>
+<div v-if="order.status == 3&&Role === 'guide'">
+    <div class="sumbit-order active" v-if="order.status == 3&&Role === 'guide'" v-tap="pay()">用户已付款</div>
 </div>
 <popup-picker title="分期数" :data="insNumberList" :show.sync="showInsNumberPicker" :value.sync="insNumberSelect" @on-hide="onHideInsSelect" v-ref:insNumber :show-cell="false" v-if="Role === 'user'"></popup-picker>
 </template>
@@ -90,6 +93,7 @@ import Cell from 'vux-components/cell'
 import JRadio from '../../components/j-radio'
 import PopupPicker from 'vux-components/popup-picker'
 import JPerson from '../../components/j-person'
+import clerkImg from '../../assets/images/role/clerk.png'
 import axios from 'axios'
 import Status from '../../status'
 try {
@@ -106,6 +110,7 @@ try {
 export default {
     data() {
         return {
+            clerkImg,
             orderNo: Lib.M.GetRequest().orderNo,
             apptNo: Lib.M.GetRequest().apptNo,
             order: {},
@@ -133,12 +138,12 @@ export default {
             }).catch((res) => {
                 alert("获取订单失败，请稍候再试QAQ")
             })
-        }else{
-          axios.get(`${Lib.C.mOrderApi}materialAppts/${this.apptNo}`).then((res) => {
-              this.order = res.data.data
-          }).catch((res) => {
-              alert("获取订单失败，请稍候再试QAQ")
-          })
+        } else {
+            axios.get(`${Lib.C.mOrderApi}materialAppts/${this.apptNo}`).then((res) => {
+                this.order = res.data.data
+            }).catch((res) => {
+                alert("获取订单失败，请稍候再试QAQ")
+            })
         }
     },
     components: {
@@ -327,6 +332,16 @@ header {
         line-height: 20px;
         text-align: center;
     }
+    .time{
+        position: absolute;
+        right: 15px;
+        top:5px;
+        height: 30px;
+        line-height: 30px;
+        text-align: right;
+        font-size: 12px;
+        color:#393939;
+    }
 }
 .butler {
     height: 50px;
@@ -383,7 +398,7 @@ header {
         width: 100%;
         height: 50px;
         position: relative;
-        .shop-name {
+        .line-1-left {
             position: absolute;
             left: 15px;
             top: 17px;
@@ -402,6 +417,18 @@ header {
             text-align: center;
             background-color: #88C929;
             border-radius: 2px;
+        }
+        .line-1-tel{
+          position: absolute;
+          top:0;
+          right:15px;
+          height: 50px;
+          line-height: 50px;
+          img{
+            vertical-align: middle;
+            height: 20px;
+            width: 20px;
+          }
         }
     }
     .zc-cell {
@@ -427,15 +454,15 @@ header {
         }
     }
     .line-2 {
-        height: 44px;
+        height: 30px;
         width: 100%;
         position: relative;
         border-top: 1px solid #eee;
         .line-2-title {
             position: absolute;
             top: 0;
-            height: 44px;
-            line-height: 44px;
+            height: 30px;
+            line-height: 30px;
             left: 15px;
             font-size: 12px;
             color: #999;
@@ -443,8 +470,8 @@ header {
         .line-2-right {
             position: absolute;
             top: 0;
-            height: 44px;
-            line-height: 44px;
+            height: 30px;
+            line-height: 30px;
             right: 15px;
             font-size: 12px;
             color: #EC5835;

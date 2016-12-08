@@ -3,12 +3,12 @@
 <div class="person" v-if="Type === '0'">
     <div class="zx-img"><img :src="Image"></div>
     <div class="zx-name">{{Name}}</div>
-    <div class="zx-tel" onclick="location.href='tel:{{Tel}}'"><img src="../assets/images/tel.png"></div>
+    <div v-if="Tel()" class="zx-tel" onclick="location.href='tel:{{Tel}}'"><img src="../assets/images/tel.png"></div>
 </div>
 <div class="zc-person" v-else>
     <div class="zc-img"><img :src="Image"></div>
     <div class="zc-name">{{Name}}</div>
-    <div class="zc-tel" onclick="location.href='tel:{{Tel}}'"><img src="../assets/images/tel-s.png"></div>
+    <div v-if="Tel()" class="zc-tel" onclick="location.href='tel:{{Tel}}'"><img src="../assets/images/tel-s.png"></div>
 </div>
 </div>
 </template>
