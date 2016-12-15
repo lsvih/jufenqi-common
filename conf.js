@@ -13,7 +13,8 @@ var Rxports = {
     serverUrl: 'http://101.200.78.103:90/',
     apiUrl: 'http://101.200.78.103:90/jfq/api/web/',
     imgUrl: 'http://ohej1hvbm.bkt.clouddn.com/',
-    notifyUrl: 'http://materialorder/api/materialAppts/noticePaymentResult'
+    notifyUrl: 'http://materialorder/api/materialAppts/noticePaymentResult',
+    picpApi: server + 'picprice/api/'
 }
 
 module.exports = Rxports
