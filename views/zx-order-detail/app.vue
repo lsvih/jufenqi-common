@@ -26,6 +26,9 @@
 
     <group title="设计方案" v-if="order.status>=3">
         <div class="module-item">
+            <tab active-color="#88C929">
+                <tab-item v-for="plan in selectPlanList" :selected="selectPlan == $index" v-tap="selectPlan = $index">方案{{plan}}</tab-item>
+            </tab>
             <scroller lock-y scrollbar-x :height=".8*getScreenWidth()*.63+20+'px'" v-ref:plan>
                 <div class="worker-product-list" :style="{width:order.planList[selectPlan].images.length*(.8*getScreenWidth()+10)+  'px',height:.8*getScreenWidth()*.63+'px'}">
                     <div class="worker-product-item" v-for="preview in order.planList[selectPlan].images" :style="{width: getScreenWidth()*.8 + 'px',height:.8*getScreenWidth()*.63+'px'}">
@@ -36,7 +39,7 @@
         </div>
     </group>
     <div class="contact" v-if="order.status>=3">
-        <j-person v-for="plan in order.planList" v-if="order.status == 1" type="0" :img="foremanImg" :name="plan.foreman.nickname" :tel="plan.foreman.mobile"></j-person>
+        <j-person type="0" :img="foremanImg" :name="order.planList[selectPlan].foreman.nickname" :tel="order.planList[selectPlan].foreman.mobile"></j-person>
     </div>
     <div v-if="order.status>=3&&order.status<=6">
         <group title="方案说明">
@@ -71,6 +74,7 @@ import Lib from 'assets/Lib.js'
 import Group from 'vux-components/group'
 import Cell from 'vux-components/cell'
 import XButton from 'vux-components/x-button'
+import {Tab,TabItem} from 'vux-components/tab'
 import Scroller from 'vux-components/scroller'
 import XImg from 'vux-components/x-img'
 import Previewer from 'vux-components/previewer'
@@ -96,6 +100,7 @@ export default {
         return {
             order: {},
             selectPlan: 0,
+            selectPlanList: ['一', '二'],
             imgUrl: Lib.C.imgUrl,
             Status,
             foremanImg,
@@ -132,6 +137,8 @@ export default {
         Previewer,
         JPerson,
         foremanImg,
+        Tab,
+        TabItem
     },
     props: {
         role: {
@@ -207,6 +214,9 @@ export default {
             }).catch((res) => {
                 alert("更新订单失败，请稍后重试")
             })
+        },
+        goto(url) {
+            window.location.href = url
         }
     }
 }
@@ -267,17 +277,5 @@ article {
     background-color: rgb(158,188,43);
     border-radius: 5px;
     color: #fff;
-}
-.user-customer-image {
-    height: 60px;
-    width: 60px;
-    position: absolute;
-    left: 15px;
-    top: 10px;
-
-    img {
-        height: 100%;
-        width: 100%;
-    }
 }
 </style>
