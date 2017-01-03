@@ -5,6 +5,7 @@
         <div class="order-time">{{getTime(order.createdAt)}}</div>
     </div>
     <div class="user-customer">
+        <div class="user-customer-image"><img :src="order.customerImage"></div>
         <div class="user-customer-name">{{order.customerName}}</div>
         <div class="user-customer-tel" v-tap="goto('tel:'+order.customerMobile)">{{order.customerMobile}}</div>
     </div>
@@ -222,7 +223,8 @@ article {
     color: #393939;
 }
 </style>
-<style scoped lang="less">@import 'zx-order-detail.less';
+<style scoped lang="less">
+@import 'zx-order-detail.less';
 
 .status-3-btn {
     position: relative;
@@ -265,4 +267,17 @@ article {
     background-color: rgb(158,188,43);
     border-radius: 5px;
     color: #fff;
-}</style>
+}
+.user-customer-image {
+    height: 60px;
+    width: 60px;
+    position: absolute;
+    left: 15px;
+    top: 10px;
+
+    img {
+        height: 100%;
+        width: 100%;
+    }
+}
+</style>

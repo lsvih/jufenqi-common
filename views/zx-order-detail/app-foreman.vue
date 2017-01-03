@@ -103,7 +103,7 @@ export default {
         }
     },
     ready() {
-        axios.get(`${Lib.C.orderApi}decorationPlans/${Lib.M.GetRequest().planId}`).then((res) => {
+        axios.get(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}/byForeman`).then((res) => {
             this.order = res.data.data
         }).catch((res) => {
             alert("获取订单失败，请稍候再试QAQ")
@@ -150,7 +150,8 @@ article {
     color: #393939;
 }
 </style>
-<style scoped lang="less">@import 'zx-order-detail.less';
+<style scoped lang="less">
+@import 'zx-order-detail.less';
 
 .status-3-btn {
     position: relative;
