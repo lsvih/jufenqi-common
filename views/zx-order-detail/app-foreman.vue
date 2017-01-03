@@ -1,5 +1,5 @@
 <template>
-<header>
+<header  v-if="render">
     <div class="customer">
         <div class="customer-image"><img :src="order.customerImage"></div>
         <div class="customer-name">{{order.customerName}}</div>
@@ -11,7 +11,7 @@
         <div class="appoint-at"><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
     </div>
 </header>
-<div class="content">
+<div class="content" v-if="render">
     <div class="status">
         <div class="order-status"><img src="../../assets/images/status.png">{{Status.zx[order.status].name}}</div>
         <div class="order-time">{{getTime(order.createdAt)}}</div>
@@ -46,12 +46,14 @@
         </group>
 
     </div>
-</div>
-<div class="status-3-btn" v-if="order.plan.status === 2&&(!order.plan.updated)" v-tap="modify()">
-    <div class="btn-right">编辑</div>
+
+
+    <div class="status-3-btn"  v-tap="modify()">
+        <div class="btn-right">编辑</div>
+    </div>
 </div>
 <!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
-<previewer :list="order.plan.images" v-ref:previewer :options="options"></previewer>
+<previewer :list="order.plan.images" v-ref:previewer :options="options" v-if="render"></previewer>
 </template>
 
 <script>
@@ -83,6 +85,7 @@ export default {
     data() {
         return {
             order: {},
+            render: false,
             imgUrl: Lib.C.imgUrl,
             Status,
             projectManagerImg,
@@ -105,6 +108,7 @@ export default {
     ready() {
         axios.get(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}/byForeman`).then((res) => {
             this.order = res.data.data
+            this.render = true
         }).catch((res) => {
             alert("获取订单失败，请稍候再试QAQ")
         })
@@ -150,7 +154,7 @@ article {
     color: #393939;
 }
 </style>
-<style scoped lang="less">
+<style lang="less">
 @import 'zx-order-detail.less';
 
 .status-3-btn {
