@@ -26,7 +26,7 @@
 
     <group title="设计方案" v-if="order.status>=3">
         <div class="module-item">
-            <tab active-color="#88C929">
+            <tab active-color="#88C929" v-if="order.status ===3 || order.status === 2">
                 <tab-item v-for="plan in selectPlanList" :selected="selectPlan == $index" v-tap="selectPlan = $index">方案{{plan}}</tab-item>
             </tab>
             <scroller lock-y scrollbar-x :height=".8*getScreenWidth()*.63+20+'px'" v-ref:plan>
