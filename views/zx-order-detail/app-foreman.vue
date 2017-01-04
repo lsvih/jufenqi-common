@@ -127,7 +127,8 @@ export default {
             return document.body.clientWidth
         },
         modify() {
-            window.location.href = `./modify.html?planId=${Lib.M.GetRequest().planId}`
+            // window.location.href = `./modify.html?planId=${Lib.M.GetRequest().planId}`
+            window.location.href = `./modify.html?orderNo=${Lib.M.GetRequest().orderNo}`
         },
         goto(url) {
             location.href = url
