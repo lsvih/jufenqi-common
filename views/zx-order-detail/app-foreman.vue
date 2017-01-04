@@ -47,8 +47,8 @@
 
     </div>
 
-
-    <div class="status-3-btn" v-tap="modify()" v-if="!order.plan.updated&&order.plan.status === 2">
+            <!-- before v-if="!order.plan.updated&&order.plan.status === 2" -->
+    <div class="status-3-btn" v-tap="modify()" v-if="order.plan.status===3 ||order.plan.status === 2">
         <div class="btn-right">编辑</div>
     </div>
 </div>
