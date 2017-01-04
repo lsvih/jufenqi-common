@@ -1,5 +1,5 @@
 <template>
-<header>
+<header v-if="render">
     <div class="status">
         <div class="order-status"><img src="../../assets/images/status.png">{{Status.zx[order.status].name}}</div>
         <div class="order-time">{{getTime(order.createdAt)}}</div>
@@ -15,7 +15,7 @@
         <div class="appoint-at"><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
     </div>
 </header>
-<div class="content">
+<div class="content" v-if="render" style="padding-bottom: 0">
     <group class="contact" style="margin-top:-1.17647059em;">
         <j-person type="0" :img="managerImg" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
         <j-person type="0" :img="projectManagerImg" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
@@ -52,21 +52,26 @@
             </div>
         </group>
     </div>
-</div>
-</div>
-<div class="status-3-btn" v-if="order.status === 3&&Role === 'user'">
-    <div class="btn-left" v-tap="cancelOrder(true)"><img src="./change.png">更换工长</div>
-    <div class="btn-right" v-tap="selectCurrentlyPlan()">选择当前方案</div>
-</div>
-<div v-if="Role === 'manager'&&order.status!=2">
-    <div class="btn" v-if="order.status == 1" v-tap="visit()">已上门</div>
-    <div class="btn" v-if="order.status == 4" v-tap="pay()">已支付</div>
-    <div class="btn" v-if="order.status == 5&&order.payed" v-tap="start()">已开工</div>
-    <div class="btn" v-if="order.status == 6" v-tap="complete()">已完工</div>
+
+
+    <div class="status-3-btn" v-if="order.status === 3&&Role === 'user'">
+        <div class="btn-left" v-tap="cancelOrder(true)"><img src="./change.png">更换工长</div>
+        <div class="btn-right" v-tap="selectCurrentlyPlan()">选择当前方案</div>
+    </div>
+    <div v-if="Role === 'manager'&&order.status!=2">
+        <div class="btn" v-if="order.status == 1" v-tap="visit()">已上门</div>
+        <div class="btn" v-if="order.status == 4" v-tap="pay()">已支付</div>
+        <div class="btn" v-if="order.status == 5&&order.payed" v-tap="start()">已开工</div>
+        <div class="btn" v-if="order.status == 6" v-tap="complete()">已完工</div>
+    </div>
 </div>
 <!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
+<div v-if="render" style="margin: 0; padding: 0;">
+    
+
 <previewer :list="order.planList[0].images" v-ref:previewer :options="options"></previewer>
 <previewer v-if="order.planList.length" :list="order.planList[1].images" v-ref:previewer :options="options"></previewer>
+</div>
 </template>
 
 <script>
@@ -98,6 +103,7 @@ try {
 export default {
     data() {
         return {
+            render: false,
             order: {},
             selectPlan: 0,
             selectPlanList: ['一', '二'],
@@ -123,6 +129,7 @@ export default {
     ready() {
         axios.get(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}`).then((res) => {
             this.order = res.data.data
+            this.render = true
         }).catch((err) => {
             alert("获取订单失败，请稍候再试QAQ")
             throw err
