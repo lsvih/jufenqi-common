@@ -53,7 +53,7 @@
     </div>
 </div>
 <!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
-<previewer :list="order.plan.images" v-ref:previewer :options="options" v-if="render"></previewer>
+<previewer :list="previewImg" v-ref:previewer :options="options"></previewer>
 </template>
 
 <script>
@@ -102,12 +102,20 @@ export default {
                         w: rect.width
                     }
                 }
-            }
+            },
+            previewImg:[]
         }
     },
     ready() {
         axios.get(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}/byForeman`).then((res) => {
             this.order = res.data.data
+            this.order.plan.images.forEach((img) => {
+                this.previewImg.push({
+                    src: this.imgUrl + img,
+                    w: 500,
+                    h: 281
+                })
+            })
             this.render = true
         }).catch((res) => {
             alert("获取订单失败，请稍候再试QAQ")
