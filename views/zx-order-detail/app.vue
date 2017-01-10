@@ -1,10 +1,11 @@
 <template>
-<header>
+<header v-if="render">
     <div class="status">
         <div class="order-status"><img src="../../assets/images/status.png">{{Status.zx[order.status].name}}</div>
         <div class="order-time">{{getTime(order.createdAt)}}</div>
     </div>
     <div class="user-customer">
+        <div class="user-customer-image"><img :src="order.customerImage"></div>
         <div class="user-customer-name">{{order.customerName}}</div>
         <div class="user-customer-tel" v-tap="goto('tel:'+order.customerMobile)">{{order.customerMobile}}</div>
     </div>
@@ -14,7 +15,7 @@
         <div class="appoint-at"><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
     </div>
 </header>
-<div class="content">
+<div class="content" v-if="render" style="padding-bottom: 0">
     <group class="contact" style="margin-top:-1.17647059em;">
         <j-person type="0" :img="managerImg" :name="order.manager.nickname" :tel="order.manager.mobile"></j-person>
         <j-person type="0" :img="projectManagerImg" :name="order.projectManager.nickname" :tel="order.projectManager.mobile"></j-person>
@@ -25,6 +26,9 @@
 
     <group title="设计方案" v-if="order.status>=3">
         <div class="module-item">
+            <tab active-color="#88C929" v-if="order.status ===3 || order.status === 2">
+                <tab-item v-for="plan in selectPlanList" :selected="selectPlan == $index" v-tap="selectPlan = $index">方案{{plan}}</tab-item>
+            </tab>
             <scroller lock-y scrollbar-x :height=".8*getScreenWidth()*.63+20+'px'" v-ref:plan>
                 <div class="worker-product-list" :style="{width:order.planList[selectPlan].images.length*(.8*getScreenWidth()+10)+  'px',height:.8*getScreenWidth()*.63+'px'}">
                     <div class="worker-product-item" v-for="preview in order.planList[selectPlan].images" :style="{width: getScreenWidth()*.8 + 'px',height:.8*getScreenWidth()*.63+'px'}">
@@ -35,7 +39,7 @@
         </div>
     </group>
     <div class="contact" v-if="order.status>=3">
-        <j-person v-for="plan in order.planList" v-if="order.status == 1" type="0" :img="foremanImg" :name="plan.foreman.nickname" :tel="plan.foreman.mobile"></j-person>
+        <j-person type="0" :img="foremanImg" :name="order.planList[selectPlan].foreman.nickname" :tel="order.planList[selectPlan].foreman.mobile"></j-person>
     </div>
     <div v-if="order.status>=3&&order.status<=6">
         <group title="方案说明">
@@ -48,21 +52,26 @@
             </div>
         </group>
     </div>
-</div>
-</div>
-<div class="status-3-btn" v-if="order.status === 3&&Role === 'user'">
-    <div class="btn-left" v-tap="cancelOrder(true)"><img src="./change.png">更换工长</div>
-    <div class="btn-right" v-tap="selectCurrentlyPlan()">选择当前方案</div>
-</div>
-<div v-if="Role === 'manager'&&order.status!=2">
-    <div class="btn" v-if="order.status == 1" v-tap="visit()">已上门</div>
-    <div class="btn" v-if="order.status == 4" v-tap="pay()">已支付</div>
-    <div class="btn" v-if="order.status == 5&&order.payed" v-tap="start()">已开工</div>
-    <div class="btn" v-if="order.status == 6" v-tap="complete()">已完工</div>
+
+
+    <div class="status-3-btn" v-if="order.status === 3&&Role === 'user'">
+        <div class="btn-left" v-tap="cancelOrder(true)"><img src="./change.png">更换工长</div>
+        <div class="btn-right" v-tap="selectCurrentlyPlan()">选择当前方案</div>
+    </div>
+    <div v-if="Role === 'manager'&&order.status!=2">
+        <div class="btn" v-if="order.status == 1" v-tap="visit()">已上门</div>
+        <div class="btn" v-if="order.status == 4" v-tap="pay()">已支付</div>
+        <div class="btn" v-if="order.status == 5&&order.payed" v-tap="start()">已开工</div>
+        <div class="btn" v-if="order.status == 6" v-tap="complete()">已完工</div>
+    </div>
 </div>
 <!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
+<div v-if="render" style="margin: 0; padding: 0;">
+    
+
 <previewer :list="order.planList[0].images" v-ref:previewer :options="options"></previewer>
 <previewer v-if="order.planList.length" :list="order.planList[1].images" v-ref:previewer :options="options"></previewer>
+</div>
 </template>
 
 <script>
@@ -70,6 +79,7 @@ import Lib from 'assets/Lib.js'
 import Group from 'vux-components/group'
 import Cell from 'vux-components/cell'
 import XButton from 'vux-components/x-button'
+import {Tab,TabItem} from 'vux-components/tab'
 import Scroller from 'vux-components/scroller'
 import XImg from 'vux-components/x-img'
 import Previewer from 'vux-components/previewer'
@@ -93,8 +103,10 @@ try {
 export default {
     data() {
         return {
+            render: false,
             order: {},
             selectPlan: 0,
+            selectPlanList: ['一', '二'],
             imgUrl: Lib.C.imgUrl,
             Status,
             foremanImg,
@@ -117,6 +129,7 @@ export default {
     ready() {
         axios.get(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}`).then((res) => {
             this.order = res.data.data
+            this.render = true
         }).catch((err) => {
             alert("获取订单失败，请稍候再试QAQ")
             throw err
@@ -131,6 +144,8 @@ export default {
         Previewer,
         JPerson,
         foremanImg,
+        Tab,
+        TabItem
     },
     props: {
         role: {
@@ -206,6 +221,9 @@ export default {
             }).catch((res) => {
                 alert("更新订单失败，请稍后重试")
             })
+        },
+        goto(url) {
+            window.location.href = url
         }
     }
 }
@@ -222,7 +240,8 @@ article {
     color: #393939;
 }
 </style>
-<style scoped lang="less">@import 'zx-order-detail.less';
+<style scoped lang="less">
+@import 'zx-order-detail.less';
 
 .status-3-btn {
     position: relative;
@@ -265,4 +284,5 @@ article {
     background-color: rgb(158,188,43);
     border-radius: 5px;
     color: #fff;
-}</style>
+}
+</style>
