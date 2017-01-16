@@ -57,14 +57,17 @@ var Status = {
         name: "退款申请"
     }, {
         status: 2,
-        name: "退款中"
+        name: "已确认"
     }, {
         status: 3,
-        name: "已退款"
+        name: "退款中"
     }, {
         status: 4,
+        name: "退款成功"
+    }, {
+        status: 5,
         name: "退款失败"
-    }, ]
+    }]
 }
 
 module.exports = Status
