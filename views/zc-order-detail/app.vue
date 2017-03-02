@@ -1,409 +1,3 @@
-<template>
-<header>
-    <img src="../../assets/images/status.png">
-    <div class="status" v-if='order.status == 2&&order.waitPaymentConfirm'>等待支付结果</div>
-    <div class="status" v-else>{{Status.zc[order.status].name}}</div>
-    <div class="btn" v-if="(order.status==1||order.status==2)&&Role === 'user'&&!order.waitPaymentConfirm" v-tap="cancelOrder()">取消{{order.status == 1?'预约':'订单'}}</div>
-    <div class="time" v-if="Role == 'manager'">{{getTime(order.createdAt)}}</div>
-</header>
-<div class="user" v-if="Role !== 'user'" :style="{height:order.orderTime?'110px':'80px'}">
-    <div class="user-img"><img :src="order.customerImage||order.appt.customerImage"></div>
-    <div class="user-name">{{order.customerName||order.appt.customerName}}</div>
-    <div class="user-tel" onclick="location.href='tel:{{order.customerMobile||order.appt.customerMobile}}'">{{order.customerMobile||order.appt.customerMobile}}</div>
-    <div class="hr"></div>
-    <div class="user-time" v-if='order.orderTime'><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
-</div>
-<div class="user" v-else :style="{height:order.orderTime?'110px':'80px'}">
-    <div class="user-img"><img :src="order.customerImage||order.appt.customerImage"></div>
-    <div class="user-name">{{order.customerName||order.appt.customerName}}</div>
-    <div class="user-tel" onclick="location.href='tel:{{order.customerMobile||order.appt.customerMobile}}'">{{order.customerMobile||order.appt.customerMobile}}</div>
-    <div class="hr"></div>
-    <div class="user-time" v-if='order.orderTime'><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
-</div>
-<div>
-    <div class="zc-list" v-if="orderNo == 0" style="margin-top:-1.17647059em">
-        <group v-for="shop in order.orders">
-            <j-person :img="clerkImg" :name="shop.clerkName" v-if="order.status >= 3"></j-person>
-            <j-person :img="guideImg" :name="shop.guideName" :tel="shop.guideMobile"></j-person>
-            <div class="line-1">
-                <div class="line-1-left">{{shop.storeName}}</div>
-                <div class="btn" v-if="order.status==5&&Role === 'user'" onclick="location.href='order-judge.html'">去评价</div>
-            </div>
-            <div class='line-1'>
-                <div class="line-1-left" style="font-size:12px;">{{shop.storeAddress}}</div>
-                <div class="line-1-tel" v-tap="goto('tel:'+shop.storePhone)"><img src="../../assets/images/tel.png"></div>
-            </div>
-            <cell class="zc-cell">
-                <div class="zc-name">{{shop.brandName}}</div>
-            </cell>
-            <div class="line-2" v-if="order.status > 1">
-                <div class="line-2-title">正价总额</div>
-                <div class="line-2-right">{{shop.normalAmount|currency "￥" 2}}</div>
-            </div>
-            <div class="line-2" v-if="order.status > 1">
-                <div class="line-2-title">特价总额</div>
-                <div class="line-2-right">{{shop.specialAmount|currency "￥" 2}}</div>
-            </div>
-            <div class="line-2" style="border-top:5px solid #eee!important;" v-if="order.status > 1 ">
-                <div class="line-2-title">总额</div>
-                <div class="line-2-right">{{shop.normalAmount+shop.specialAmount|currency "￥" 2}}</div>
-            </div>
-            <div class="line-3" v-if="order.status ==1||order.status == 2||order.status ==5">
-                <div class="appoint-at" v-if="order.status == 1"><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
-            </div>
-        </group>
-
-        <group title="订单总计" v-if="order.status > 1">
-            <div class="line-2">
-                <div class="line-2-title">正价总额</div>
-                <div class="line-2-right">{{getCount("normalAmount",order.orders)|currency "￥" 2}}</div>
-            </div>
-            <div class="line-2">
-                <div class="line-2-title">特价总额</div>
-                <div class="line-2-right">{{getCount("specialAmount",order.orders)|currency "￥" 2}}</div>
-            </div>
-            <div class="line-2" style="border-top:5px solid #eee!important;">
-                <div class="line-2-title">订单总额</div>
-                <div class="line-2-right">{{getAllCount(order.orders)|currency "￥" 2}}</div>
-            </div>
-        </group>
-
-        <group v-if="order.status == 2&&Role === 'user'&&!order.waitPaymentConfirm">
-            <div class="sumbit-order active" v-tap="goto('./pay.html?apptNo='+order.apptNo)">继续支付</div>
-        </group>
-        <group v-if="order.status == 1&&Role === 'user'">
-            <div class="sumbit-order active" v-tap="gotoPay()">发起支付</div>
-        </group>
-    </div>
-    <div class="zc-list" v-else>
-        <group>
-            <j-person :img="clerkImg" :name="order.clerkName"></j-person>
-            <div class="line-1">
-                <div class="line-1-left">{{order.storeName}}</div>
-                <div class="btn" v-if="order.status==6&&Role === 'user'" onclick="location.href='order-judge.html'">去评价</div>
-            </div>
-            <div class='line-1'>
-                <div class="line-1-left" style="font-size:12px;">{{order.storeAddress}}</div>
-                <div class="line-1-tel" v-tap="goto('tel:'+order.storePhone)"><img src="../../assets/images/tel.png"></div>
-            </div>
-            <cell class="zc-cell">
-                <div class="zc-name">{{order.brandName}}</div>
-            </cell>
-            <div class="line-2" v-if="order.status > 1">
-                <div class="line-2-title">正价总额</div>
-                <div class="line-2-right">{{order.normalAmount|currency "￥" 2}}</div>
-            </div>
-            <div class="line-2" v-if="order.status > 1">
-                <div class="line-2-title">特价总额</div>
-                <div class="line-2-right">{{order.specialAmount|currency "￥" 2}}</div>
-            </div>
-            <div class="line-2" style="border-top:5px solid #eee!important;" v-if="order.status > 1 ">
-                <div class="line-2-title">总额</div>
-                <div class="line-2-right">{{order.normalAmount+order.specialAmount|currency "￥" 2}}</div>
-            </div>
-            <div class="line-3" v-if="(order.status ==1||order.status == 2||order.status ==5)&&order.appt.orderTime">
-                <div class="appoint-at" v-if="order.status == 1"><img src="../../assets/images/time.png">{{getTime(order.appt.orderTime)}}</div>
-            </div>
-        </group>
-        <group v-if="order.status > 2" title="支付方式">
-            <div class="line-2" v-if="order.appt.payMethod == 2">
-                <div class="line-2-title">分期支付</div>
-                <!-- <div class="line-2-right" style="color:#393939;">{{order.stageCount}}期</div> -->
-            </div>
-            <div class="line-2" v-if="order.appt.payMethod == 1">
-                <div class="line-2-title">全款支付</div>
-            </div>
-            <div class="line-2" v-if="order.appt.payMethod == 3">
-                <div class="line-2-title">微信支付</div>
-            </div>
-            <div class="line-2" v-if="order.appt.payMethod == 4">
-                <div class="line-2-title">银联支付</div>
-            </div>
-        </group>
-    </div>
-</div>
-<loading :show.sync="showLoading" text="正在加载,请稍候"></loading>
-<popup-picker title="分期数" :data="insNumberList" :show.sync="showInsNumberPicker" :columns="1" :show-cell="false" :value.sync="insNumberSelect" @on-hide="onHideInsSelect" v-if="role == 'guide'" show-name v-ref:insNumber></popup-picker>
-
-<div v-if="order.status == 3&&Role === 'guide'">
-    <div class="sumbit-order active" v-if="order.status == 3&&Role === 'guide'&&order.appt.payMethod == 1" v-tap="pay()">用户已付款</div>
-    <div class="sumbit-order active" v-if="order.status == 3&&Role === 'guide'&&order.appt.payMethod == 2" v-tap="insPay(order.orderNo,order.customerId)">选择分期期数</div>
-</div>
-</template>
-
-<script>
-import Lib from 'assets/Lib.js'
-import Group from 'vux-components/group'
-import Cell from 'vux-components/cell'
-import managerImg from '../../assets/images/role/manager.png'
-import JPerson from '../../components/j-person'
-import clerkImg from '../../assets/images/role/clerk.png'
-import guideImg from '../../assets/images/role/guide.png'
-import Loading from 'vux-components/loading'
-import PopupPicker from 'vux-components/popup-picker'
-import axios from 'axios'
-import Status from '../../status'
-try {
-    let now = Number(new Date().getTime())
-    if (Number(JSON.parse(localStorage.user).expiredAt) < now) {
-        localStorage.removeItem('user')
-        location.href = './wxAuth.html?url=' + encodeURIComponent(location.href)
-    }
-    axios.defaults.headers.common['Authorization'] = JSON.parse(localStorage.getItem("user")).tokenType + ' ' + JSON.parse(localStorage.getItem("user")).token
-} catch (e) {
-    localStorage.clear()
-    window.location.href = `./wxAuth.html?url=index.html`
-}
-export default {
-    data() {
-        return {
-            clerkImg,
-            managerImg,
-            guideImg,
-            orderNo: Lib.M.GetRequest().orderNo,
-            apptNo: Lib.M.GetRequest().apptNo,
-            order: {},
-            Status,
-            payments: [{
-                key: '0',
-                value: '全款购买'
-            }, {
-                key: '1',
-                value: '分期购买'
-            }],
-            payWay: "",
-            showLoading: false,
-            showInsNumberPicker: false,
-            insNumberList: [],
-            insNumberSelect: [],
-        }
-    },
-    ready() {
-        if (this.orderNo != 0) {
-            axios.get(`${Lib.C.mOrderApi}materialOrders/${this.orderNo}`).then((res) => {
-                this.order = res.data.data
-            }).catch((res) => {
-                alert("获取订单失败，请稍候再试QAQ")
-            })
-        } else {
-            axios.get(`${Lib.C.mOrderApi}materialAppts/${this.apptNo}`).then((res) => {
-                this.order = res.data.data
-            }).catch((res) => {
-                alert("获取订单失败，请稍候再试QAQ")
-            })
-        }
-    },
-    components: {
-        Group,
-        Cell,
-        JPerson,
-        Loading,
-        PopupPicker
-    },
-    props: {
-        role: {
-            type: String,
-            default: 'user'
-        }
-    },
-    computed: {
-        Role() {
-            return this.role
-        }
-    },
-    methods: {
-        getCount(type, orders) {
-            let count = 0
-            orders.map((e) => {
-                count += e[type]
-            })
-            return count
-        },
-        getAllCount(orders) {
-            let count = 0
-            orders.map((e) => {
-                count += (e.specialAmount + e.normalAmount)
-            })
-            return count
-        },
-        selectPay(e) {
-            this.payWay = Number(e)
-        },
-        submitOrder() {
-            if (this.payWay === "") return false
-            if (this.payWay == 1) {
-                this.showInsNumberPicker = true
-            } else {
-                axios.post(`${Lib.C.mOrderApi}materialOrders/${Lib.M.GetRequest().orderNo}/customerConfirmMaterial?payMethod=1&stageCount=1`).then((res) => {
-                    alert("订单已更新！")
-                    location.reload()
-                }).catch((res) => {
-                    alert("更新订单失败，请稍后重试")
-                })
-            }
-        },
-        cancelOrder() {
-            axios.post(`${Lib.C.mOrderApi}materialAppts/${Lib.M.GetRequest().apptNo}/cancel`).then((res) => {
-                history.go(-1)
-            }).catch((res) => {
-                alert("取消订单失败，请稍后重试")
-            })
-        },
-        getTime(timeStamp) {
-            var d = new Date(timeStamp * 1000);
-            var Y = d.getFullYear() + '-';
-            var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
-            var D = (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate());
-            return Y + M + D
-        },
-        look() {
-            axios.post(`${Lib.C.mOrderApi}materialOrders/${Lib.M.GetRequest().orderNo}/confirmVisit`).then((res) => {
-                alert("订单已更新！")
-                location.reload()
-            }).catch((res) => {
-                alert("更新订单失败，请稍后重试")
-            })
-        },
-        pay() {
-            axios.post(`${Lib.C.mOrderApi}materialOrders/${Lib.M.GetRequest().orderNo}/confirmPay`).then((res) => {
-                alert("订单已更新！")
-                location.reload()
-            }).catch((res) => {
-                alert("更新订单失败，请稍后重试")
-            })
-        },
-        getgood() {
-            axios.post(`${Lib.C.mOrderApi}materialOrders/${Lib.M.GetRequest().orderNo}/confirmReceive`).then((res) => {
-                alert("订单已更新！")
-                location.reload()
-            }).catch((res) => {
-                alert("更新订单失败，请稍后重试")
-            })
-        },
-        modify() {
-            location.href = `modify.html?orderNo=${Lib.M.GetRequest().orderNo}`
-        },
-        goto(url) {
-            location.href = url
-        },
-        gotoPay() {
-            this.showLoading = true
-            let sbList = []
-            this.order.orders.forEach((e) => {
-                sbList.push([e.storeId, e.brandId])
-            })
-            let storeList = []
-            sbList.forEach((sb) => {
-                if (!~storeList.indexOf(sb[0])) {
-                    storeList.push(sb[0])
-                }
-            })
-            let brandList = []
-            sbList.forEach((sb) => {
-                if (!~brandList.indexOf(sb[1])) {
-                    brandList.push(sb[1])
-                }
-            })
-            console.log(sbList, storeList, brandList)
-            axios.get(`${Lib.C.merApi}stores`, {
-                params: {
-                    filter: `id:${storeList.join(',')}`
-                }
-            }).then((res) => {
-                let stores = res.data.data
-                stores.map((e) => {
-                    e.brands = []
-                })
-                axios.get(`${Lib.C.merApi}brands`, {
-                    params: {
-                        filter: `id:${brandList.join(',')}`
-                    }
-                }).then((res) => {
-                    let brands = res.data.data
-                    sbList.forEach((a) => {
-                        stores[findIndex(a[0], stores)].brands.push(brands[findIndex(a[1], brands)])
-                    })
-                    localStorage.temp = JSON.stringify(stores)
-                    location.href = './add-order.html?from=' + this.apptNo
-                }).catch((err) => {
-                    alert('网络连接失败，请稍后再试')
-                    this.showLoading = false
-                    throw err
-                })
-            }).catch((err) => {
-                alert('网络连接失败，请稍后再试')
-                this.showLoading = false
-                throw err
-            })
-
-            function findIndex(id, array) {
-                for (let i = 0; i < array.length; i++) {
-                    if (array[i].id == id) return i
-                }
-                return -1
-            }
-        },
-        insPay(orderNo, customerId) {
-            this.showLoading = true
-            axios.get(`${Lib.C.loanApi}loan-applications/`, {
-                params: {
-                    filter: `userId:${customerId}|statusEnum:3`
-                }
-            }).then((res) => {
-                if (res.data.data[0].bankBranchPeriod == null) {
-                    axios.get(`${Lib.C.loanApi}bank-branches/${res.data.data[0].bankBranch.id}`, {
-                        params: {
-                            expand: 'bankBranchPeriods'
-                        }
-                    }).then((res) => {
-                        this.insNumberList = []
-                        res.data.data.bankBranchPeriods.map((e) => {
-                            this.insNumberList.push({
-                                name: e.name,
-                                value: String(e.id),
-                            })
-                        })
-                        this.showInsNumberPicker = true
-                        this.showLoading = false
-                        console.log(this.insNumberList, this.showInsNumberPicker)
-                    }).catch((err) => {
-                        alert('网络连接失败，请重试')
-                        this.showLoading = false
-                        throw err
-                    })
-                } else {
-                    let bbpId = res.data.data[0].bankBranchPeriod.id
-                    axios.post(`${Lib.C.mOrderApi}materialOrders/${orderNo}/confirmPayment?bankBranchPeriodId=${bbpId}`).then((res) => {
-                        alert('确认分期成功！')
-                        location.reload()
-                    }).catch((err) => {
-                        alert('网络连接失败，请重试')
-                        this.showLoading = false
-                        throw err
-                    })
-                }
-            }).catch((err) => {
-                alert('网络连接失败，请重试')
-                this.showLoading = false
-                throw err
-            })
-        },
-        onHideInsSelect() {
-            if (this.insNumberSelect.length) {
-                axios.post(`${Lib.C.mOrderApi}materialOrders/${this.orderNo}/confirmPayment?bankBranchPeriodId=${this.insNumberSelect[0]}`).then((res) => {
-                    alert('确认分期成功！')
-                    location.reload()
-                }).catch((err) => {
-                    alert('网络连接失败，请重试')
-                    this.showLoading = false
-                    throw err
-                })
-            }
-        }
-    }
-}
-</script>
-
 <style>
 body {
     background-color: #eee;
@@ -447,6 +41,7 @@ body {
         right: 15px;
         width: 20px;
         height: 20px;
+
     }
 }
 header {
@@ -626,7 +221,7 @@ header {
             line-height: 30px;
             right: 15px;
             font-size: 12px;
-            color: #EC5835;
+            color: #f99736;
         }
     }
     .line-3 {
@@ -670,7 +265,7 @@ header {
     color: #fff;
 }
 .active {
-    background-color: #9EBC2B!important;
+    background-color: #f99736 !important;
 }
 .user {
     position: relative;
@@ -733,3 +328,409 @@ header {
     }
 }
 </style>
+
+<template>
+    <header>
+        <img src="../../assets/images/status.png">
+        <div class="status" v-if='order.status == 2&&order.waitPaymentConfirm'>等待支付结果</div>
+        <div class="status" v-else>{{Status.zc[order.status].name}}</div>
+        <div class="btn" v-if="(order.status==1||order.status==2)&&Role === 'user'&&!order.waitPaymentConfirm" v-tap="cancelOrder()">取消{{order.status == 1?'预约':'订单'}}</div>
+        <div class="time" v-if="Role == 'manager'">{{getTime(order.createdAt)}}</div>
+    </header>
+    <div class="user" v-if="Role !== 'user'" :style="{height:order.orderTime?'110px':'80px'}">
+        <div class="user-img"><img :src="order.customerImage||order.appt.customerImage"></div>
+        <div class="user-name">{{order.customerName||order.appt.customerName}}</div>
+        <div class="user-tel" onclick="location.href='tel:{{order.customerMobile||order.appt.customerMobile}}'">{{order.customerMobile||order.appt.customerMobile}}</div>
+        <div class="hr"></div>
+        <div class="user-time" v-if='order.orderTime'><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
+    </div>
+    <div class="user" v-else :style="{height:order.orderTime?'110px':'80px'}">
+        <div class="user-img"><img :src="order.customerImage||order.appt.customerImage"></div>
+        <div class="user-name">{{order.customerName||order.appt.customerName}}</div>
+        <div class="user-tel" onclick="location.href='tel:{{order.customerMobile||order.appt.customerMobile}}'">{{order.customerMobile||order.appt.customerMobile}}</div>
+        <div class="hr"></div>
+        <div class="user-time" v-if='order.orderTime'><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
+    </div>
+    <div>
+        <div class="zc-list" v-if="groupNo !== undefined" style="margin-top:-1.17647059em">
+            <group>
+                <div class="line-1">
+                    <div class="line-1-left">{{order.storeName}}</div>
+                    <div class="btn" v-if="order.status==5&&Role === 'user'" onclick="location.href='order-judge.html'">去评价</div>
+                </div>
+                <div class='line-1'>
+                    <div class="line-1-left" style="font-size:12px;">{{order.storeAddress}}</div>
+                    <div class="line-1-tel" v-tap="goto('tel:'+shop.storePhone)"><img src="../../assets/images/tel.png"></div>
+                </div>
+            </group>
+            <group v-for="shop in order.orders">
+                <j-person :img="clerkImg" :name="shop.clerkName" v-if="order.status >= 3"></j-person>
+                <j-person :img="guideImg" :name="shop.guideName" :tel="shop.guideMobile"></j-person>
+                <!-- <div class="line-1">
+                    <div class="line-1-left">{{shop.storeName}}</div>
+                    <div class="btn" v-if="order.status==5&&Role === 'user'" onclick="location.href='order-judge.html'">去评价</div>
+                </div>
+                <div class='line-1'>
+                    <div class="line-1-left" style="font-size:12px;">{{shop.storeAddress}}</div>
+                    <div class="line-1-tel" v-tap="goto('tel:'+shop.storePhone)"><img src="../../assets/images/tel.png"></div>
+                </div> -->
+                <cell class="zc-cell">
+                    <div class="zc-name">{{shop.brandName}}</div>
+                </cell>
+                <div class="line-2" v-if="order.status > 1">
+                    <div class="line-2-title">正价总额</div>
+                    <div class="line-2-right">{{shop.normalAmount|currency "￥" 2}}</div>
+                </div>
+                <div class="line-2" v-if="order.status > 1">
+                    <div class="line-2-title">特价总额</div>
+                    <div class="line-2-right">{{shop.specialAmount|currency "￥" 2}}</div>
+                </div>
+                <div class="line-2" style="border-top:5px solid #eee!important;" v-if="order.status > 1 ">
+                    <div class="line-2-title">总额</div>
+                    <div class="line-2-right">{{shop.normalAmount+shop.specialAmount|currency "￥" 2}}</div>
+                </div>
+                <div class="line-3" v-if="order.status ==1||order.status == 2||order.status ==5">
+                    <div class="appoint-at" v-if="order.status == 1"><img src="../../assets/images/time.png">{{getTime(order.orderTime)}}</div>
+                </div>
+            </group>
+
+            <group title="订单总计" v-if="order.status > 1">
+                <div class="line-2">
+                    <div class="line-2-title">正价总额</div>
+                    <div class="line-2-right">{{getCount("normalAmount",order.orders)|currency "￥" 2}}</div>
+                </div>
+                <div class="line-2">
+                    <div class="line-2-title">特价总额</div>
+                    <div class="line-2-right">{{getCount("specialAmount",order.orders)|currency "￥" 2}}</div>
+                </div>
+                <div class="line-2" style="border-top:5px solid #eee!important;">
+                    <div class="line-2-title">订单总额</div>
+                    <div class="line-2-right">{{getAllCount(order.orders)|currency "￥" 2}}</div>
+                </div>
+            </group>
+
+            <!-- <group v-if="order.status == 2&&Role === 'user'&&!order.waitPaymentConfirm">
+                <div class="sumbit-order active" v-tap="goto('./pay.html?apptNo='+order.apptNo)">继续支付</div>
+            </group> -->
+            
+        </div>
+        <div class="zc-list three" v-else >
+            <group v-for="merchant in order.groups">
+                <!-- <j-person :img="clerkImg" :name="order.clerkName"></j-person> -->
+                <div class="line-1">
+                    <div class="line-1-left">{{merchant.storeName}}</div>
+                    <!-- <div class="btn" v-if="merchant.status==6&&Role === 'user'" onclick="location.href='order-judge.html'">去评价</div> -->
+                </div>
+                <div class='line-1'>
+                    <div class="line-1-left" style="font-size:12px;">{{merchant.storeAddress}}</div>
+                    <div class="line-1-tel" v-tap="goto('tel:'+merchant.storePhone)"><img src="../../assets/images/tel.png"></div>
+                </div>
+                <div class="line-2" v-for="brand in merchant.orders">
+                    <div class="line-2-title">{{brand.brandName}}</div>
+                </div>
+               <!--  <div class="line-2" v-if="order.status > 1">
+                    <div class="line-2-title">正价总额</div>
+                    <div class="line-2-right">{{order.normalAmount|currencydiv>
+                </div>
+                <div class="line-2" v-if="order.status > 1">
+                    <div class="line-2-title">特价总额</div>
+                    <div class="line-2-right">{{order.specialAmount|currency "￥" 2}}</div>
+                </div>
+                <div class="line-2" style="border-top:5px solid #eee!important;" v-if="order.status > 1 ">
+                    <div class="line-2-title">总额</div>
+                    <div class="line-2-right">{{order.normalAmount+order.specialAmount|currency "￥" 2}}</div>
+                </div>
+                <div class="line-3" v-if="(order.status ==1||order.status == 2||order.status ==5)&&order.appt.orderTime">
+                    <div class="appoint-at" v-if="order.status == 1"><img src="../../assets/images/time.png">{{getTime(order.appt.orderTime)}}</div>
+                </div> -->
+            </group>
+            <group v-if="order.status == 1&&Role === 'user'">
+                <div class="sumbit-order active" v-tap="gotoPay()">立即购买</div>
+            </group>
+        </div>
+        <div class="zc-list">
+            <group v-if="order.status > 2" title="支付方式">
+                <div class="line-2" v-if="order.appt.payMethod == 2">
+                    <div class="line-2-title">分期支付</div>
+                    <!-- <div class="line-2-right" style="color:#393939;">{{order.stageCount}}期</div> -->
+                </div>
+                <div class="line-2" v-if="order.appt.payMethod == 1">
+                    <div class="line-2-title">全款支付</div>
+                </div>
+                <div class="line-2" v-if="order.appt.payMethod == 3">
+                    <div class="line-2-title">微信支付</div>
+                </div>
+                <div class="line-2" v-if="order.appt.payMethod == 4">
+                    <div class="line-2-title">银联支付</div>
+                </div>
+            </group>
+        </div>
+    </div>
+    <loading :show.sync="showLoading" text="正在加载,请稍候"></loading>
+    <popup-picker title="分期数" :data="insNumberList" :show.sync="showInsNumberPicker" :columns="1" :show-cell="false" :value.sync="insNumberSelect" @on-hide="onHideInsSelect" v-if="role == 'guide'" show-name v-ref:insNumber></popup-picker>
+
+    <div v-if="order.status == 3&&Role === 'guide'">
+        <div class="sumbit-order active" v-if="order.status == 3&&Role === 'guide'&&order.appt.payMethod == 1" v-tap="pay()">用户已付款</div>
+        <div class="sumbit-order active" v-if="order.status == 3&&Role === 'guide'&&order.appt.payMethod == 2" v-tap="insPay(order.orderNo,order.customerId)">选择分期期数</div>
+    </div>
+</template>
+
+<script>
+import Lib from 'assets/Lib.js'
+import Group from 'vux-components/group'
+import Cell from 'vux-components/cell'
+import managerImg from '../../assets/images/role/manager.png'
+import JPerson from '../../components/j-person'
+import clerkImg from '../../assets/images/role/clerk.png'
+import guideImg from '../../assets/images/role/guide.png'
+import Loading from 'vux-components/loading'
+import PopupPicker from 'vux-components/popup-picker'
+import axios from 'axios'
+import Status from '../../status'
+try {
+    let now = Number(new Date().getTime())
+    if (Number(JSON.parse(localStorage.user).expiredAt) < now) {
+        localStorage.removeItem('user')
+        location.href = './wxAuth.html?url=' + encodeURIComponent(location.href)
+    }
+    axios.defaults.headers.common['Authorization'] = JSON.parse(localStorage.getItem("user")).tokenType + ' ' + JSON.parse(localStorage.getItem("user")).token
+} catch (e) {
+    localStorage.clear()
+    window.location.href = `./wxAuth.html?url=index.html`
+}
+export default {
+    data() {
+        return {
+            clerkImg,
+            managerImg,
+            guideImg,
+            orderNo: Lib.M.GetRequest().orderNo,
+            apptNo: Lib.M.GetRequest().apptNo,
+            groupNo: Lib.M.GetRequest().groupNo,
+            order: {},
+            Status,
+            payments: [{
+                key: '0',
+                value: '全款购买'
+            }, {
+                key: '1',
+                value: '分期购买'
+            },{
+                key: '2',
+                value: '微信支付'
+            }],
+            payWay: "",
+            showLoading: false,
+            showInsNumberPicker: false,
+            insNumberList: [],
+            insNumberSelect: [],
+        }
+    },
+    ready() {
+        if (this.groupNo != undefined) {
+            axios.get(`${Lib.C.mOrderApi}materialGroups/${this.groupNo}`).then((res) => {
+                this.order = res.data.data
+            }).catch((err) => {
+               throw err
+           })
+        } else {
+            axios.get(`${Lib.C.mOrderApi}materialAppts/${this.apptNo}`).then((res) => {
+                this.order = res.data.data
+            }).catch((res) => {
+                alert("获取订单失败，请稍候再试QAQ")
+            })
+        }
+    },
+    components: {
+        Group,
+        Cell,
+        JPerson,
+        Loading,
+        PopupPicker
+    },
+    props: {
+        role: {
+            type: String,
+            default: 'user'
+        }
+    },
+    computed: {
+        Role() {
+            return this.role
+        }
+    },
+    methods: {
+        getCount(type, orders) {
+            let count = 0
+            orders.map((e) => {
+                count += e[type]
+            })
+            return count
+        },
+        getAllCount(orders) {
+            let count = 0
+            orders.map((e) => {
+                count += (e.specialAmount + e.normalAmount)
+            })
+            return count
+        },
+        selectPay(e) {
+            this.payWay = Number(e)
+        },
+        submitOrder() {
+            if (this.payWay === "") return false
+            if (this.payWay == 1) {
+                this.showInsNumberPicker = true
+            } else {
+                axios.post(`${Lib.C.mOrderApi}materialOrders/${Lib.M.GetRequest().orderNo}/customerConfirmMaterial?payMethod=1&stageCount=1`).then((res) => {
+                    alert("订单已更新！")
+                    location.reload()
+                }).catch((res) => {
+                    alert("更新订单失败，请稍后重试")
+                })
+            }
+        },
+        cancelOrder() {
+            axios.post(`${Lib.C.mOrderApi}materialAppts/${Lib.M.GetRequest().apptNo}/cancel`).then((res) => {
+                history.go(-1)
+            }).catch((res) => {
+                alert("取消订单失败，请稍后重试")
+            })
+        },
+        getTime(timeStamp) {
+            var d = new Date(timeStamp * 1000);
+            var Y = d.getFullYear() + '-';
+            var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
+            var D = (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate());
+            return Y + M + D
+        },
+        look() {
+            axios.post(`${Lib.C.mOrderApi}materialOrders/${Lib.M.GetRequest().orderNo}/confirmVisit`).then((res) => {
+                alert("订单已更新！")
+                location.reload()
+            }).catch((res) => {
+                alert("更新订单失败，请稍后重试")
+            })
+        },
+        pay() {
+            axios.post(`${Lib.C.mOrderApi}materialOrders/${Lib.M.GetRequest().orderNo}/confirmPay`).then((res) => {
+                alert("订单已更新！")
+                location.reload()
+            }).catch((res) => {
+                alert("更新订单失败，请稍后重试")
+            })
+        },
+        getgood() {
+            axios.post(`${Lib.C.mOrderApi}materialOrders/${Lib.M.GetRequest().orderNo}/confirmReceive`).then((res) => {
+                alert("订单已更新！")
+                location.reload()
+            }).catch((res) => {
+                alert("更新订单失败，请稍后重试")
+            })
+        },
+        modify() {
+            location.href = `modify.html?orderNo=${Lib.M.GetRequest().orderNo}`
+        },
+        goto(url) {
+            location.href = url
+        },
+        gotoPay() {
+            this.showLoading = true
+            let sbList = []
+            this.order.groups.forEach((e) => {
+                sbList.push(e.storeId)
+            })
+            let storeList = []
+            sbList.forEach((sb) => {
+                if (!~storeList.indexOf(sb)) {
+                    storeList.push(sb)
+                }
+            })
+            axios.get(`${Lib.C.merApi}stores/?filter=id:${storeList.join(',')}&expand=storeBrands`).then((res) => {
+                let stores = res.data.data
+                stores.map((e) => {
+                    e.brands = []
+                    e.storeBrands.map((storeBrand) => {
+                        e.brands.push({
+                            id: storeBrand.brand.id,
+                            name: storeBrand.brand.name
+                        })
+                    })
+                })
+                localStorage.temp = JSON.stringify(stores)
+                location.href = './add-order.html?from=' + this.apptNo
+            }).catch((err) => {
+                alert('网络连接失败，请稍后再试')
+                this.showLoading = false
+                throw err
+            })
+
+            function findIndex(id, array) {
+                for (let i = 0; i < array.length; i++) {
+                    if (array[i].id == id) return i
+                }
+                return -1
+            }
+        },
+        insPay(orderNo, customerId) {
+            this.showLoading = true
+            axios.get(`${Lib.C.loanApi}loan-applications/`, {
+                params: {
+                    filter: `userId:${customerId}|statusEnum:3`
+                }
+            }).then((res) => {
+                if (res.data.data[0].bankBranchPeriod == null) {
+                    axios.get(`${Lib.C.loanApi}bank-branches/${res.data.data[0].bankBranch.id}`, {
+                        params: {
+                            expand: 'bankBranchPeriods'
+                        }
+                    }).then((res) => {
+                        this.insNumberList = []
+                        res.data.data.bankBranchPeriods.map((e) => {
+                            this.insNumberList.push({
+                                name: e.name,
+                                value: String(e.id),
+                            })
+                        })
+                        this.showInsNumberPicker = true
+                        this.showLoading = false
+                        console.log(this.insNumberList, this.showInsNumberPicker)
+                    }).catch((err) => {
+                        alert('网络连接失败，请重试')
+                        this.showLoading = false
+                        throw err
+                    })
+                } else {
+                    let bbpId = res.data.data[0].bankBranchPeriod.id
+                    axios.post(`${Lib.C.mOrderApi}materialOrders/${orderNo}/confirmPayment?bankBranchPeriodId=${bbpId}`).then((res) => {
+                        alert('确认分期成功！')
+                        location.reload()
+                    }).catch((err) => {
+                        alert('网络连接失败，请重试')
+                        this.showLoading = false
+                        throw err
+                    })
+                }
+            }).catch((err) => {
+                alert('网络连接失败，请重试')
+                this.showLoading = false
+                throw err
+            })
+        },
+        onHideInsSelect() {
+            if (this.insNumberSelect.length) {
+                axios.post(`${Lib.C.mOrderApi}materialOrders/${this.orderNo}/confirmPayment?bankBranchPeriodId=${this.insNumberSelect[0]}`).then((res) => {
+                    alert('确认分期成功！')
+                    location.reload()
+                }).catch((err) => {
+                    alert('网络连接失败，请重试')
+                    this.showLoading = false
+                    throw err
+                })
+            }
+        }
+    }
+}
+</script>
+
+

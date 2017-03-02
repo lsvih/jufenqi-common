@@ -1,3 +1,31 @@
+<style>
+body {
+    background-color: #eee;
+}
+
+article {
+    padding: 15px;
+    font-size: 12px;
+    color: #393939;
+}
+</style>
+<style lang="less">
+@import 'zx-order-detail.less';
+
+.status-3-btn {
+    position: relative;
+    width: calc(~"100% - 30px");
+    margin-left: 15px;
+    border-radius: 2px;
+    height: 44px;
+    margin-top: 10px;
+    background-color: rgb(158, 188, 43);
+    color: #fff;
+    line-height: 44px;
+    text-align: center;
+}
+</style>
+
 <template>
 <header  v-if="render">
     <div class="customer">
@@ -85,7 +113,7 @@ export default {
     data() {
         return {
             order: {},
-            render: false,
+            render: true,
             imgUrl: Lib.C.imgUrl,
             Status,
             projectManagerImg,
@@ -116,7 +144,6 @@ export default {
                     h: 281
                 })
             })
-            this.render = true
         }).catch((res) => {
             alert("获取订单失败，请稍候再试QAQ")
         })
@@ -152,30 +179,4 @@ export default {
 }
 </script>
 
-<style>
-body {
-    background-color: #eee;
-}
 
-article {
-    padding: 15px;
-    font-size: 12px;
-    color: #393939;
-}
-</style>
-<style lang="less">
-@import 'zx-order-detail.less';
-
-.status-3-btn {
-    position: relative;
-    width: calc(~"100% - 30px");
-    margin-left: 15px;
-    border-radius: 2px;
-    height: 44px;
-    margin-top: 10px;
-    background-color: rgb(158, 188, 43);
-    color: #fff;
-    line-height: 44px;
-    text-align: center;
-}
-</style>

@@ -7,7 +7,7 @@
     <div class="time">{{getTime(order.createdAt)}}</div>
 </header>
 <div class="user" v-if="Role !== 'user'" :style="{height:order.order.orderTime?'110px':'80px'}">
-    <div class="user-img"><img :src="order.customerImage||order.appt.customerImage"></div>
+    <div class="user-img"><img :src="order.order.customerImage||order.order.appt.customerImage"></div>
     <div class="user-name">{{order.order.appt.customerName}}</div>
     <div class="user-tel" onclick="location.href='tel:{{order.order.appt.customerMobile}}'">{{order.order.appt.customerMobile}}</div>
     <div class="hr"></div>
