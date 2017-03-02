@@ -133,6 +133,7 @@ header {
 }
 .zc-list {
     width: 100%;
+    margin-bottom: 20px;
     .zc-shop-img {
         height: 120px;
         width: 100%;
@@ -263,6 +264,9 @@ header {
     text-align: center;
     font-size: 16px;
     color: #fff;
+    position: fixed;
+    bottom: 0;
+    left: 0;
 }
 .active {
     background-color: #f99736 !important;
@@ -444,9 +448,7 @@ header {
                     <div class="appoint-at" v-if="order.status == 1"><img src="../../assets/images/time.png">{{getTime(order.appt.orderTime)}}</div>
                 </div> -->
             </group>
-            <group v-if="order.status == 1&&Role === 'user'">
-                <div class="sumbit-order active" v-tap="gotoPay()">立即购买</div>
-            </group>
+            <div v-if="order.status == 1&&Role === 'user'" class="sumbit-order active" v-tap="gotoPay()">立即购买</div>
         </div>
         <div class="zc-list">
             <group v-if="order.status > 2" title="支付方式">
