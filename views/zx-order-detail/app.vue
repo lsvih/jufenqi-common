@@ -65,13 +65,12 @@
         <div class="btn" v-if="order.status == 6" v-tap="complete()">已完工</div>
     </div>
 </div>
-<!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
-<div v-if="render" style="margin: 0; padding: 0;">
-    
+<x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button>
 
-<previewer :list="order.planList[0].images" v-ref:previewer :options="options"></previewer>
-<previewer v-if="order.planList.length" :list="order.planList[1].images" v-ref:previewer :options="options"></previewer>
-</div>
+<previewer :list="previewImgsOne" v-ref:previewer :options="options"></previewer>
+<previewer v-if="order.planList.length > 1" :list="previewImgsTwo" v-ref:previewer :options="options"></previewer>
+<!-- <previewer v-if="order.planList.length" :list="order.planList[1].images" v-ref:previewer :options="options"></previewer> -->
+
 </template>
 
 <script>
@@ -104,7 +103,9 @@ export default {
     data() {
         return {
             render: false,
-            order: {},
+            order: {
+                planList:[]
+            },
             selectPlan: 0,
             selectPlanList: ['一', '二'],
             imgUrl: Lib.C.imgUrl,
@@ -123,12 +124,30 @@ export default {
                         w: rect.width
                     }
                 }
-            }
+            },
+            previewImgsOne: [],
+            previewImgsTwo: []
         }
     },
     ready() {
         axios.get(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}`).then((res) => {
             this.order = res.data.data
+            this.order.planList[0].images.forEach((img) => {
+                this.previewImgsOne.push({
+                    src: this.imgUrl + img,
+                    w: 500,
+                    h: 281
+                })
+            })
+            if (this.order.planList.length > 1) {
+                this.order.planList[1].images.forEach((img) => {
+                    this.previewImgsTwo.push({
+                        src: this.imgUrl + img,
+                        w: 500,
+                        h: 281
+                    })
+                })
+            }
             this.render = true
         }).catch((err) => {
             alert("获取订单失败，请稍候再试QAQ")

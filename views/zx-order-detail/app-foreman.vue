@@ -1,3 +1,31 @@
+<style>
+body {
+    background-color: #eee;
+}
+
+article {
+    padding: 15px;
+    font-size: 12px;
+    color: #393939;
+}
+</style>
+<style lang="less">
+@import 'zx-order-detail.less';
+
+.status-3-btn {
+    position: relative;
+    width: calc(~"100% - 30px");
+    margin-left: 15px;
+    border-radius: 2px;
+    height: 44px;
+    margin-top: 10px;
+    background-color: rgb(158, 188, 43);
+    color: #fff;
+    line-height: 44px;
+    text-align: center;
+}
+</style>
+
 <template>
 <header  v-if="render">
     <div class="customer">
@@ -53,7 +81,7 @@
     </div>
 </div>
 <!-- <x-button slot="right" style="border-radius:0;background-color:rgb(158, 188, 43);color:#fff;margin:20px 0;width:100%" v-if="order.status==7" onclick="location.href='order-judge.html'">去评价</x-button> -->
-<previewer :list="order.plan.images" v-ref:previewer :options="options" v-if="render"></previewer>
+<previewer :list="previewImg" v-ref:previewer :options="options"></previewer>
 </template>
 
 <script>
@@ -85,7 +113,7 @@ export default {
     data() {
         return {
             order: {},
-            render: false,
+            render: true,
             imgUrl: Lib.C.imgUrl,
             Status,
             projectManagerImg,
@@ -102,13 +130,20 @@ export default {
                         w: rect.width
                     }
                 }
-            }
+            },
+            previewImg:[]
         }
     },
     ready() {
         axios.get(`${Lib.C.orderApi}decorationOrders/${Lib.M.GetRequest().orderNo}/byForeman`).then((res) => {
             this.order = res.data.data
-            this.render = true
+            this.order.plan.images.forEach((img) => {
+                this.previewImg.push({
+                    src: this.imgUrl + img,
+                    w: 500,
+                    h: 281
+                })
+            })
         }).catch((res) => {
             alert("获取订单失败，请稍候再试QAQ")
         })
@@ -144,30 +179,4 @@ export default {
 }
 </script>
 
-<style>
-body {
-    background-color: #eee;
-}
 
-article {
-    padding: 15px;
-    font-size: 12px;
-    color: #393939;
-}
-</style>
-<style lang="less">
-@import 'zx-order-detail.less';
-
-.status-3-btn {
-    position: relative;
-    width: calc(~"100% - 30px");
-    margin-left: 15px;
-    border-radius: 2px;
-    height: 44px;
-    margin-top: 10px;
-    background-color: rgb(158, 188, 43);
-    color: #fff;
-    line-height: 44px;
-    text-align: center;
-}
-</style>
