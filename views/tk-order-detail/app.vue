@@ -1,3 +1,375 @@
+<style>
+body {
+    background-color: #eee;
+}
+</style>
+<style scoped lang="less">
+.cell-item {
+    position: relative;
+    height: 80px;
+    .shop-logo {
+        position: absolute;
+        top: 10px;
+        left: 15px;
+        width: 120px;
+        height: 80px;
+    }
+    .shop-name {
+        position: absolute;
+        top: 10px;
+        left: 145px;
+        font-size: 12px;
+        color: #393939;
+    }
+    .shop-address {
+        position: absolute;
+        top: 44px;
+        left: 145px;
+        font-size: 12px;
+        color: #999;
+    }
+    .shop-rank {
+        position: absolute;
+        bottom: 10px;
+        left: 145px;
+        font-size: 12px;
+        color: #5965B2;
+    }
+    .shop-is-favorite {
+        position: absolute;
+        top: 40px;
+        right: 15px;
+        width: 20px;
+        height: 20px;
+    }
+}
+header {
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 30px;
+    width: 100%;
+    background-color: #fff;
+    z-index: 20;
+    img {
+        width: 13px;
+        height: 20px;
+        position: absolute;
+        top: 5px;
+        left: 15px;
+    }
+    .status {
+        position: absolute;
+        left: 38px;
+        top: 9px;
+        height: 12px;
+        font-size: 12px;
+        color: #393939;
+    }
+    .btn {
+        position: absolute;
+        right: 15px;
+        top: 5px;
+        width: 60px;
+        height: 20px;
+        // border: 1px solid #393939;
+        font-size: 12px;
+        color: #999;
+        line-height: 20px;
+        text-align: center;
+    }
+    .time {
+        position: absolute;
+        right: 15px;
+        top: 5px;
+        height: 30px;
+        line-height: 30px;
+        text-align: right;
+        font-size: 12px;
+        color: #393939;
+    }
+}
+.butler {
+    height: 50px;
+    width: 100%;
+    z-index: 20;
+    border-bottom: 1px solid #eee;
+    background-color: #fff;
+    position: fixed;
+    top: 30px;
+    left: 0;
+    .zc-butler-img {
+        position: absolute;
+        top: 5px;
+        left: 15px;
+        height: 40px;
+        width: 40px;
+        border-radius: 20px;
+        img {
+            height: 100%;
+            width: 100%;
+            border-radius: 50%;
+        }
+    }
+    .zc-butler-name {
+        position: absolute;
+        bottom: 15px;
+        left: 65px;
+        font-size: 16px;
+        color: #393939;
+    }
+    .zc-butler-tel {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        height: 20px;
+        width: 20px;
+        img {
+            height: 100%;
+            width: 100%;
+        }
+    }
+}
+.zc-list {
+    width: 100%;
+    .zc-shop-img {
+        height: 120px;
+        width: 100%;
+        img {
+            height: 100%;
+            width: 100%;
+        }
+    }
+    .line-1 {
+        width: 100%;
+        height: 37px;
+        position: relative;
+        .line-1-left {
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            font-size: 16px;
+            color: #393939;
+        }
+        .btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 12px;
+            color: #fff;
+            width: 50px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            background-color: #ff9736;
+            border-radius: 2px;
+        }
+        .line-1-tel {
+            position: absolute;
+            top: 0;
+            right: 15px;
+            height: 37px;
+            line-height: 37px;
+            img {
+                vertical-align: middle;
+                height: 20px;
+                width: 20px;
+            }
+        }
+        .line-1-merchant {
+            position: absolute;
+            color: #ff9736;
+            right: 15px;
+            top: -23px;
+            font-size: 12px;
+        }
+    }
+    .zc-cell {
+        height: 10px;
+        position: relative;
+        .zc-name {
+            position: absolute;
+            top: 9px;
+            left: 15px;
+            font-size: 12px;
+            color: #393939;
+        }
+        .zc-price {
+            position: absolute;
+            top: 9px;
+            right: 15px;
+            font-size: 12px;
+            color: #EC5835;
+            span {
+                margin-left: 10px;
+                color: #999;
+            }
+        }
+    }
+    .line-2 {
+        height: 30px;
+        width: 100%;
+        position: relative;
+        border-top: 1px solid #eee;
+        .line-2-title {
+            position: absolute;
+            top: 0;
+            height: 30px;
+            line-height: 30px;
+            left: 15px;
+            font-size: 12px;
+            color: #999;
+        }
+        .line-2-right {
+            position: absolute;
+            top: 0;
+            height: 30px;
+            line-height: 30px;
+            right: 15px;
+            font-size: 12px;
+            color: #EC5835;
+        }
+    }
+    .line-3 {
+        height: 30px;
+        width: 100%;
+        position: relative;
+        border-top: 1px solid #eee;
+        .cancel {
+            position: absolute;
+            right: 15px;
+            top: 0;
+            height: 30px;
+            font-size: 12px;
+            line-height: 30px;
+            color: #999;
+        }
+        .appoint-at {
+            position: absolute;
+            left: 15px;
+            top: 0;
+            height: 30px;
+            line-height: 30px;
+            color: #999;
+            font-size: 12px;
+            img {
+                vertical-align: middle;
+                height: 12px;
+                width: 12px;
+                margin-right: 5px;
+            }
+        }
+    }
+}
+.sumbit-order {
+    height: 44px;
+    width: 100%;
+    line-height: 44px;
+    background-color: #e2e2e2;
+    text-align: center;
+    font-size: 16px;
+    color: #fff;
+}
+.active {
+    background-color: #9EBC2B!important;
+}
+.user {
+    position: relative;
+    width: 100%;
+    height: 110px;
+    background-color: #fff;
+    margin-top: 5px;
+    .user-img {
+        position: absolute;
+        height: 60px;
+        width: 60px;
+        left: 15px;
+        top: 10px;
+        img {
+            height: 100%;
+            width: 100%;
+        }
+    }
+    .user-name {
+        position: absolute;
+        left: 85px;
+        top: 32px;
+        font-size: 16px;
+        color: #393939;
+    }
+    .user-tel {
+        position: absolute;
+        right: 15px;
+        top: 34px;
+        font-size: 12px;
+        color: #ff9736;
+    }
+    .hr {
+        height: 1px;
+        width: 100%;
+        position: absolute;
+        top: 80px;
+        left: 0;
+        background-color: #eee;
+    }
+    .user-address {
+        position: absolute;
+        bottom: 8px;
+        left: 15px;
+        font-size: 12px;
+        color: #393939;
+    }
+    .user-time {
+        position: absolute;
+        bottom: 8px;
+        right: 15px;
+        font-size: 12px;
+        color: #393939;
+        img {
+            height: 10px;
+            width: 10px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+    }
+}
+.setTopLine(@c: #C7C7C7) {
+    content: " ";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 1px;
+    border-top: 1px solid @c;
+    color: @c;
+    transform-origin: 0 0;
+    transform: scaleY(0.5);
+}
+.weui_dialog_ft {
+    position: relative;
+    line-height: 42px;
+    margin-top: 20px;
+    font-size: 17px;
+    display: flex;
+    span {
+        display: block;
+        flex: 1;
+        color: #888;
+        text-decoration: none;
+        &:active {
+            background-color: #EEEEEE;
+        }
+    }
+    &:after {
+        content: " ";
+        .setTopLine(#D5D5D6);
+    }
+    .primary {
+        color: #ff9736;
+    }
+}
+</style>
+
 <template>
 <header>
     <img src="../../assets/images/status.png">
@@ -221,375 +593,3 @@ export default {
     }
 }
 </script>
-
-<style>
-body {
-    background-color: #eee;
-}
-</style>
-<style scoped lang="less">
-.cell-item {
-    position: relative;
-    height: 80px;
-    .shop-logo {
-        position: absolute;
-        top: 10px;
-        left: 15px;
-        width: 120px;
-        height: 80px;
-    }
-    .shop-name {
-        position: absolute;
-        top: 10px;
-        left: 145px;
-        font-size: 12px;
-        color: #393939;
-    }
-    .shop-address {
-        position: absolute;
-        top: 44px;
-        left: 145px;
-        font-size: 12px;
-        color: #999;
-    }
-    .shop-rank {
-        position: absolute;
-        bottom: 10px;
-        left: 145px;
-        font-size: 12px;
-        color: #5965B2;
-    }
-    .shop-is-favorite {
-        position: absolute;
-        top: 40px;
-        right: 15px;
-        width: 20px;
-        height: 20px;
-    }
-}
-header {
-    position: relative;
-    top: 0;
-    left: 0;
-    height: 30px;
-    width: 100%;
-    background-color: #fff;
-    z-index: 20;
-    img {
-        width: 13px;
-        height: 20px;
-        position: absolute;
-        top: 5px;
-        left: 15px;
-    }
-    .status {
-        position: absolute;
-        left: 38px;
-        top: 9px;
-        height: 12px;
-        font-size: 12px;
-        color: #393939;
-    }
-    .btn {
-        position: absolute;
-        right: 15px;
-        top: 5px;
-        width: 60px;
-        height: 20px;
-        // border: 1px solid #393939;
-        font-size: 12px;
-        color: #999;
-        line-height: 20px;
-        text-align: center;
-    }
-    .time {
-        position: absolute;
-        right: 15px;
-        top: 5px;
-        height: 30px;
-        line-height: 30px;
-        text-align: right;
-        font-size: 12px;
-        color: #393939;
-    }
-}
-.butler {
-    height: 50px;
-    width: 100%;
-    z-index: 20;
-    border-bottom: 1px solid #eee;
-    background-color: #fff;
-    position: fixed;
-    top: 30px;
-    left: 0;
-    .zc-butler-img {
-        position: absolute;
-        top: 5px;
-        left: 15px;
-        height: 40px;
-        width: 40px;
-        border-radius: 20px;
-        img {
-            height: 100%;
-            width: 100%;
-            border-radius: 50%;
-        }
-    }
-    .zc-butler-name {
-        position: absolute;
-        bottom: 15px;
-        left: 65px;
-        font-size: 16px;
-        color: #393939;
-    }
-    .zc-butler-tel {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        height: 20px;
-        width: 20px;
-        img {
-            height: 100%;
-            width: 100%;
-        }
-    }
-}
-.zc-list {
-    width: 100%;
-    .zc-shop-img {
-        height: 120px;
-        width: 100%;
-        img {
-            height: 100%;
-            width: 100%;
-        }
-    }
-    .line-1 {
-        width: 100%;
-        height: 37px;
-        position: relative;
-        .line-1-left {
-            position: absolute;
-            left: 15px;
-            top: 10px;
-            font-size: 16px;
-            color: #393939;
-        }
-        .btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 12px;
-            color: #fff;
-            width: 50px;
-            height: 20px;
-            line-height: 20px;
-            text-align: center;
-            background-color: #88C929;
-            border-radius: 2px;
-        }
-        .line-1-tel {
-            position: absolute;
-            top: 0;
-            right: 15px;
-            height: 37px;
-            line-height: 37px;
-            img {
-                vertical-align: middle;
-                height: 20px;
-                width: 20px;
-            }
-        }
-        .line-1-merchant {
-            position: absolute;
-            color: #3ba794;
-            right: 15px;
-            top: -23px;
-            font-size: 12px;
-        }
-    }
-    .zc-cell {
-        height: 10px;
-        position: relative;
-        .zc-name {
-            position: absolute;
-            top: 9px;
-            left: 15px;
-            font-size: 12px;
-            color: #393939;
-        }
-        .zc-price {
-            position: absolute;
-            top: 9px;
-            right: 15px;
-            font-size: 12px;
-            color: #EC5835;
-            span {
-                margin-left: 10px;
-                color: #999;
-            }
-        }
-    }
-    .line-2 {
-        height: 30px;
-        width: 100%;
-        position: relative;
-        border-top: 1px solid #eee;
-        .line-2-title {
-            position: absolute;
-            top: 0;
-            height: 30px;
-            line-height: 30px;
-            left: 15px;
-            font-size: 12px;
-            color: #999;
-        }
-        .line-2-right {
-            position: absolute;
-            top: 0;
-            height: 30px;
-            line-height: 30px;
-            right: 15px;
-            font-size: 12px;
-            color: #EC5835;
-        }
-    }
-    .line-3 {
-        height: 30px;
-        width: 100%;
-        position: relative;
-        border-top: 1px solid #eee;
-        .cancel {
-            position: absolute;
-            right: 15px;
-            top: 0;
-            height: 30px;
-            font-size: 12px;
-            line-height: 30px;
-            color: #999;
-        }
-        .appoint-at {
-            position: absolute;
-            left: 15px;
-            top: 0;
-            height: 30px;
-            line-height: 30px;
-            color: #999;
-            font-size: 12px;
-            img {
-                vertical-align: middle;
-                height: 12px;
-                width: 12px;
-                margin-right: 5px;
-            }
-        }
-    }
-}
-.sumbit-order {
-    height: 44px;
-    width: 100%;
-    line-height: 44px;
-    background-color: #e2e2e2;
-    text-align: center;
-    font-size: 16px;
-    color: #fff;
-}
-.active {
-    background-color: #9EBC2B!important;
-}
-.user {
-    position: relative;
-    width: 100%;
-    height: 110px;
-    background-color: #fff;
-    margin-top: 5px;
-    .user-img {
-        position: absolute;
-        height: 60px;
-        width: 60px;
-        left: 15px;
-        top: 10px;
-        img {
-            height: 100%;
-            width: 100%;
-        }
-    }
-    .user-name {
-        position: absolute;
-        left: 85px;
-        top: 32px;
-        font-size: 16px;
-        color: #393939;
-    }
-    .user-tel {
-        position: absolute;
-        right: 15px;
-        top: 34px;
-        font-size: 12px;
-        color: #3BA794;
-    }
-    .hr {
-        height: 1px;
-        width: 100%;
-        position: absolute;
-        top: 80px;
-        left: 0;
-        background-color: #eee;
-    }
-    .user-address {
-        position: absolute;
-        bottom: 8px;
-        left: 15px;
-        font-size: 12px;
-        color: #393939;
-    }
-    .user-time {
-        position: absolute;
-        bottom: 8px;
-        right: 15px;
-        font-size: 12px;
-        color: #393939;
-        img {
-            height: 10px;
-            width: 10px;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-    }
-}
-.setTopLine(@c: #C7C7C7) {
-    content: " ";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 1px;
-    border-top: 1px solid @c;
-    color: @c;
-    transform-origin: 0 0;
-    transform: scaleY(0.5);
-}
-.weui_dialog_ft {
-    position: relative;
-    line-height: 42px;
-    margin-top: 20px;
-    font-size: 17px;
-    display: flex;
-    span {
-        display: block;
-        flex: 1;
-        color: #888;
-        text-decoration: none;
-        &:active {
-            background-color: #EEEEEE;
-        }
-    }
-    &:after {
-        content: " ";
-        .setTopLine(#D5D5D6);
-    }
-    .primary {
-        color: #0BB20C;
-    }
-}
-</style>
