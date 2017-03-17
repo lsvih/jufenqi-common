@@ -1,7 +1,65 @@
+<style>
+body {
+    background-color: #eee;
+}
+
+article {
+    padding: 15px;
+    font-size: 12px;
+    color: #393939;
+}
+</style>
+<style scoped lang="less">
+@import 'zx-order-detail.less';
+
+.status-3-btn {
+    position: relative;
+    width: 100%;
+    height: 44px;
+    background-color: #ff9736;
+    color: #fff;
+    .btn-left {
+        position: absolute;
+        height: 100%;
+        width: 35%;
+        background-color: #fff;
+        line-height: 44px;
+        text-align: center;
+        color: #393939;
+        left: 0;
+        img {
+            vertical-align: middle;
+            margin-right: 6px;
+            height: 15px;
+            width: 16px;
+        }
+    }
+    .btn-right {
+        position: absolute;
+        height: 100%;
+        width: 65%;
+        line-height: 44px;
+        text-align: center;
+        right: 0;
+    }
+}
+.btn {
+    position: relative;
+    height: 44px;
+    width: calc(~"100% - 30px");
+    margin: 50px 15px 0;
+    line-height: 44px;
+    text-align: center;
+    background-color: #ff9736;
+    border-radius: 5px;
+    color: #fff;
+}
+</style>
+
 <template>
 <header v-if="render">
     <div class="status">
-        <div class="order-status"><img src="../../assets/images/status.png">{{Status.zx[order.status].name}}</div>
+        <div class="order-status"><img src="../../assets/images/status-org.png">{{Status.zx[order.status].name}}</div>
         <div class="order-time">{{getTime(order.createdAt)}}</div>
     </div>
     <div class="user-customer">
@@ -26,7 +84,7 @@
 
     <group title="设计方案" v-if="order.status>=3">
         <div class="module-item">
-            <tab active-color="#88C929" v-if="order.status ===3 || order.status === 2">
+            <tab active-color="#ff9736" v-if="order.status ===3 || order.status === 2">
                 <tab-item v-for="plan in selectPlanList" :selected="selectPlan == $index" v-tap="selectPlan = $index">方案{{plan}}</tab-item>
             </tab>
             <scroller lock-y scrollbar-x :height=".8*getScreenWidth()*.63+20+'px'" v-ref:plan>
@@ -247,61 +305,3 @@ export default {
     }
 }
 </script>
-
-<style>
-body {
-    background-color: #eee;
-}
-
-article {
-    padding: 15px;
-    font-size: 12px;
-    color: #393939;
-}
-</style>
-<style scoped lang="less">
-@import 'zx-order-detail.less';
-
-.status-3-btn {
-    position: relative;
-    width: 100%;
-    height: 44px;
-    background-color: rgb(158, 188, 43);
-    color: #fff;
-    .btn-left {
-        position: absolute;
-        height: 100%;
-        width: 35%;
-        background-color: #fff;
-        line-height: 44px;
-        text-align: center;
-        color: #393939;
-        left: 0;
-        img {
-            vertical-align: middle;
-            margin-right: 6px;
-            height: 15px;
-            width: 16px;
-        }
-    }
-    .btn-right {
-        position: absolute;
-        height: 100%;
-        width: 65%;
-        line-height: 44px;
-        text-align: center;
-        right: 0;
-    }
-}
-.btn {
-    position: relative;
-    height: 44px;
-    width: calc(~"100% - 30px");
-    margin: 50px 15px 0;
-    line-height: 44px;
-    text-align: center;
-    background-color: rgb(158,188,43);
-    border-radius: 5px;
-    color: #fff;
-}
-</style>

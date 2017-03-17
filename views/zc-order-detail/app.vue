@@ -300,7 +300,7 @@ header {
         right: 15px;
         top: 34px;
         font-size: 12px;
-        color: #3BA794;
+        color: #ff9736;
     }
     .hr {
         height: 1px;
@@ -335,7 +335,7 @@ header {
 
 <template>
     <header>
-        <img src="../../assets/images/status.png">
+        <img src="../../assets/images/status-org.png">
         <div class="status" v-if='order.status == 2&&order.waitPaymentConfirm'>等待支付结果</div>
         <div class="status" v-else>{{Status.zc[order.status].name}}</div>
         <div class="btn" v-if="(order.status==1||order.status==2)&&Role === 'user'&&!order.waitPaymentConfirm" v-tap="cancelOrder()">取消{{order.status == 1?'预约':'订单'}}</div>
@@ -364,7 +364,7 @@ header {
                 </div>
                 <div class='line-1'>
                     <div class="line-1-left" style="font-size:12px;">{{order.storeAddress}}</div>
-                    <div class="line-1-tel" v-tap="goto('tel:'+shop.storePhone)"><img src="../../assets/images/tel.png"></div>
+                    <div class="line-1-tel" v-tap="goto('tel:'+shop.storePhone)"><img src="../../assets/images/tel-org.png"></div>
                 </div>
             </group>
             <group v-for="shop in order.orders">
@@ -427,7 +427,7 @@ header {
                 </div>
                 <div class='line-1'>
                     <div class="line-1-left" style="font-size:12px;">{{merchant.storeAddress}}</div>
-                    <div class="line-1-tel" v-tap="goto('tel:'+merchant.storePhone)"><img src="../../assets/images/tel.png"></div>
+                    <div class="line-1-tel" v-tap="goto('tel:'+merchant.storePhone)"><img src="../../assets/images/tel-org.png"></div>
                 </div>
                 <div class="line-2" v-for="brand in merchant.orders">
                     <div class="line-2-title">{{brand.brandName}}</div>
