@@ -372,7 +372,7 @@ header {
 
 <template>
 <header>
-    <img src="../../assets/images/status.png">
+    <img src="../../assets/images/status-org.png">
     <!-- <div class="status" v-if='order.status == 2&&order.waitPaymentConfirm'>等待支付结果</div> -->
     <div class="status" v-else>{{Status.tk[order.status].name}}</div>
     <!-- <div class="btn" v-if="(order.status==1||order.status==2)&&Role === 'user'&&!order.waitPaymentConfirm" v-tap="cancelOrder()">取消{{order.status == 1?'预约':'订单'}}</div> -->
@@ -402,7 +402,7 @@ header {
             </div>
             <div class='line-1'>
                 <div class="line-1-left" style="font-size:12px;">{{order.order.storeAddress}}</div>
-                <div class="line-1-tel" v-tap="goto('tel:'+order.order.storePhone)"><img src="../../assets/images/tel.png"></div>
+                <div class="line-1-tel" v-tap="goto('tel:'+order.order.storePhone)"><img src="../../assets/images/tel-org.png"></div>
                 <div class="line-1-merchant" v-tap="goto(merchantUrl)">查看品牌详情</div>
             </div>
             <cell class="zc-cell">
@@ -417,22 +417,56 @@ header {
                 <div class="line-2-right">{{order.order.specialAmount|currency "￥" 2}}</div>
             </div>
             <div class="line-2" >
+                <div class="line-2-title">正价返现率</div>
+                <div class="line-2-right">{{order.order.normalCashbackRate}}</div>
+            </div>
+            <div class="line-2" >
+                <div class="line-2-title">特价返现率</div>
+                <div class="line-2-right">{{order.order.specialCashbackRate}}</div>
+            </div>
+            <div class="line-2" >
+                <div class="line-2-title">点券率</div>
+                <div class="line-2-right">{{order.order.couponRate}}</div>
+            </div>
+            <div class="line-2" >
                 <div class="line-2-title">交易总额</div>
                 <div class="line-2-right">{{order.order.totalAmount|currency "￥" 2}}</div>
             </div>
-        </group>
-        <group title="退款金额">
             <div class="line-2" >
-                <div class="line-2-title">正价退款金额</div>
+                <div class="line-2-title">是否返现</div>
+                <div class="line-2-right">{{order.order.cashbackDone?'是':'否'}}</div>
+            </div>
+            <div class="line-2" >
+                <div class="line-2-title">返现总额</div>
+                <div class="line-2-right">{{order.order.totalCashback|currency "￥" 2}}</div>
+            </div>
+        </group>
+        <group title="退款申请金额">
+            <div class="line-2" >
+                <div class="line-2-title">正价申请退款金额</div>
                 <div class="line-2-right">{{order.normalAmount|currency "￥" 2}}</div>
             </div>
             <div class="line-2" >
-                <div class="line-2-title">特价退款金额</div>
+                <div class="line-2-title">特价申请退款金额</div>
                 <div class="line-2-right">{{order.specialAmount|currency "￥" 2}}</div>
             </div>
             <div class="line-2" >
-                <div class="line-2-title">退款总额</div>
+                <div class="line-2-title">退款申请总额</div>
                 <div class="line-2-right">{{order.totalAmount|currency "￥" 2}}</div>
+            </div>
+        </group>
+        <group title="实际退款金额">
+            <div class="line-2" >
+                <div class="line-2-title">正价实际退款金额</div>
+                <div class="line-2-right">{{order.realNormalAmount|currency "￥" 2}}</div>
+            </div>
+            <div class="line-2" >
+                <div class="line-2-title">特价实际退款金额</div>
+                <div class="line-2-right">{{order.realSpecialAmount|currency "￥" 2}}</div>
+            </div>
+            <div class="line-2" >
+                <div class="line-2-title">实际退款总额</div>
+                <div class="line-2-right">{{order.realTotalAmount|currency "￥" 2}}</div>
             </div>
         </group>
         <group title="退款说明">
@@ -441,13 +475,13 @@ header {
 
             <div class="line-2">
                 <div class="line-2-title">欠款去向：将返回到你的支付账户中（
-                    <span v-if="order.order.appt.payMethod === 1">全额支付</span>
-                    <span v-if="order.order.appt.payMethod === 2">分期支付</span>
-                    <span v-if="order.order.appt.payMethod === 3">微信支付</span>
+                    <span v-if="order.order.appt.payMethod === 1" style="color: #ff9736">全额支付</span>
+                    <span v-if="order.order.appt.payMethod === 2" style="color: #ff9736">分期支付</span>
+                    <span v-if="order.order.appt.payMethod === 3" style="color: #ff9736">微信支付</span>
                 ）</div>
             </div>
             <div class="line-2">
-                <div class="line-2-title">如有疑问，请拨打客服电话：<span v-tap="goto('tel:40000390808')" style="color: #3ba794;">400-0039-0808</span></div>
+                <div class="line-2-title">如有疑问，请拨打客服电话：<span v-tap="goto('tel:40000390808')" style="color: #ff9736;">400-0039-0808</span></div>
             </div>
         </group>
     </div>
