@@ -407,6 +407,14 @@ header {
                     <div class="line-2-title">特价总额</div>
                     <div class="line-2-right">{{getCount("specialAmount",order.orders)|currency "￥" 2}}</div>
                 </div>
+                <div class="line-2">
+                    <div class="line-2-title">实际支付</div>
+                    <div class="line-2-right">{{getAllCount(order.orders) - getCount("predepositAmount",order.orders)|currency "￥" 2}}</div>
+                </div>
+                <div class="line-2">
+                    <div class="line-2-title">活动减免</div>
+                    <div class="line-2-right">{{getCount("predepositAmount",order.orders)|currency "￥" 2}}</div>
+                </div>
                 <div class="line-2" style="border-top:5px solid #eee!important;">
                     <div class="line-2-title">订单总额</div>
                     <div class="line-2-right">{{getAllCount(order.orders)|currency "￥" 2}}</div>
