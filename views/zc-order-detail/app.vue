@@ -424,7 +424,7 @@ header {
             <!-- <group v-if="order.status == 2&&Role === 'user'&&!order.waitPaymentConfirm">
                 <div class="sumbit-order active" v-tap="goto('./pay.html?apptNo='+order.apptNo)">继续支付</div>
             </group> -->
-            
+
         </div>
         <div class="zc-list three" v-else >
             <group v-for="merchant in order.groups">
@@ -501,9 +501,9 @@ try {
     let now = Number(new Date().getTime())
     if (Number(JSON.parse(localStorage.user).expiredAt) < now) {
         localStorage.removeItem('user')
-        location.href = './wxAuth.html?url=' + encodeURIComponent(location.href)
+        location.href = `./wxAuth.html?url=${encodeURIComponent(location.href)}`
     }
-    axios.defaults.headers.common['Authorization'] = JSON.parse(localStorage.getItem("user")).tokenType + ' ' + JSON.parse(localStorage.getItem("user")).token
+    axios.defaults.headers.common['Authorization'] = `${JSON.parse(localStorage.getItem("user")).tokenType} ${JSON.parse(localStorage.getItem("user")).token}`
 } catch (e) {
     localStorage.clear()
     window.location.href = `./wxAuth.html?url=index.html`
@@ -608,10 +608,10 @@ export default {
             })
         },
         getTime(timeStamp) {
-            var d = new Date(timeStamp * 1000);
-            var Y = d.getFullYear() + '-';
-            var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
-            var D = (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate());
+            const d = new Date(timeStamp * 1000);
+            const Y = `${d.getFullYear()}-`;
+            const M = `${d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1}-`;
+            const D = (d.getDate() < 10 ? `0${d.getDate()}` : d.getDate());
             return Y + M + D
         },
         look() {
@@ -668,7 +668,7 @@ export default {
                     })
                 })
                 localStorage.temp = JSON.stringify(stores)
-                location.href = './add-order.html?from=' + this.apptNo
+                location.href = `./add-order.html?from=${this.apptNo}`
             }).catch((err) => {
                 alert('网络连接失败，请稍后再试')
                 this.showLoading = false
@@ -742,5 +742,3 @@ export default {
     }
 }
 </script>
-
-
