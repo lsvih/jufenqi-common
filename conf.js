@@ -18,4 +18,4 @@ const Rxports = {
     homeApi: `${server}homepage/api/`
 };
 
-export default Rxports;
+module.exports = Rxports
