@@ -1,7 +1,7 @@
 const server = 'http://wx.jufenqi.com:8080/';
 const Rxports = {
     appname: '居分期',
-    server,
+    server: server,
     userApi: `${server}user/api/`,
     walletApi: `${server}wallet/api/`,
     orderApi: `${server}decorationorder/api/`,
