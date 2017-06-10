@@ -20,7 +20,7 @@
 
 // module.exports = Rxports
 
-var server = 'http://t.jufenqi.com:8080/'
+var server = 'http://wx.jufenqi.com:8080/'
 var Rxports = {
     appname: '居分期',
     server: server,
