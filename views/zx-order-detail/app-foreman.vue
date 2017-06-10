@@ -102,9 +102,9 @@ try {
     let now = Number(new Date().getTime())
     if (Number(JSON.parse(localStorage.user).expiredAt) < now) {
         localStorage.removeItem('user')
-        location.href = './wxAuth.html?url=' + encodeURIComponent(location.href)
+        location.href = `./wxAuth.html?url=${encodeURIComponent(location.href)}`
     }
-    axios.defaults.headers.common['Authorization'] = JSON.parse(localStorage.getItem("user")).tokenType + ' ' + JSON.parse(localStorage.getItem("user")).token
+    axios.defaults.headers.common['Authorization'] = `${JSON.parse(localStorage.getItem("user")).tokenType} ${JSON.parse(localStorage.getItem("user")).token}`
 } catch (e) {
     localStorage.clear()
     window.location.href = `./wxAuth.html?url=index.html`
@@ -169,14 +169,12 @@ export default {
             location.href = url
         },
         getTime(timeStamp) {
-            var d = new Date(timeStamp * 1000);
-            var Y = d.getFullYear() + '-';
-            var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
-            var D = (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate());
+            const d = new Date(timeStamp * 1000);
+            const Y = `${d.getFullYear()}-`;
+            const M = `${d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1}-`;
+            const D = (d.getDate() < 10 ? `0${d.getDate()}` : d.getDate());
             return Y + M + D
         },
     }
 }
 </script>
-
-
